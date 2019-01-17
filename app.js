@@ -6,15 +6,15 @@ const mysql = require('mysql');
 
 //chama os modulos das rotas
 const indexRoute = require('./routes/index')
-const docenteRoute = require('./routes/routerDocente')
+const usuarioRoute = require('./routes/routerUsuario')
 
 //configura conexao com banco
 exports.connection = mysql.createConnection({
-  host: '191.252.193.192',
+  host: 'localhost',
   port: '3306',
   user: 'root',
   password: '6code384',
-  database: 'BDARCO'
+  database: 'BD'
 });
 
 
@@ -44,7 +44,7 @@ app.get('/PDF/:NAME', function (req, res) {
 
 //carregando rotas
 app.use('/index', indexRoute);
-app.use('/docente', docenteRoute)
+app.use('/usuario', usuarioRoute)
 app.use(express.static('uploads'));
 
 

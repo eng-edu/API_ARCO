@@ -11,13 +11,13 @@ exports.executeSQL = function(stringSQL, callbeck){
             console.log(error)
             rows = JSON.parse(JSON.stringify(error));
             callbeck(rows);
-          //  console.log(rows);
+            console.log(rows);
 
         }else{
             rows = JSON.parse(JSON.stringify(results));
             callbeck(rows);
         }
-     // console.log("executou SQL:" + stringSQL);
+      console.log("executou SQL:" + stringSQL);
     });
     
     
