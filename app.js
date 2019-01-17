@@ -44,15 +44,7 @@ app.get('/PDF/:NAME', function (req, res) {
 
 //carregando rotas
 app.use('/index', indexRoute);
-app.use('/loginDiscente', discenteLogin)
-app.use('/loginDocente', docenteLogin)
-app.use('/discente', discenteRoute)
 app.use('/docente', docenteRoute)
-app.use('/arco', arcoRoute)
-app.use('/etapa', etapaRoute)
-app.use('/documento', documentoRoute)
-app.use('/mensagem', mensagemRoute)
-app.use('/upp', upRoute)
 app.use(express.static('uploads'));
 
 

@@ -6,9 +6,7 @@ const BD = require('./app');
 exports.executeSQL = function(stringSQL, callbeck){
    
     BD.connection.query(stringSQL, function(error, results, fields){
-    
         var rows;
-
         if(error) {
             console.log(error)
             rows = JSON.parse(JSON.stringify(error));
@@ -16,13 +14,10 @@ exports.executeSQL = function(stringSQL, callbeck){
           //  console.log(rows);
 
         }else{
-            
             rows = JSON.parse(JSON.stringify(results));
             callbeck(rows);
         }
-
-       
-      console.log("executou SQL:" + stringSQL);
+     // console.log("executou SQL:" + stringSQL);
     });
     
     
