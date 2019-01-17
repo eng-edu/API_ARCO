@@ -2,8 +2,8 @@
 
 const execute = require('../executeSQL');
 
-exports.buscar = ('/BUSCAR/:ID', (req, res) => {
-    var sqlQry = `SELECT * FROM DOCENTE WHERE ID = '${req.params.ID}'`;
+exports.buscar = ('/buscar/:ID', (req, res) => {
+    var sqlQry = `SELECT * FROM USUARIO WHERE ID = '${req.params.ID}'`;
     execute.executeSQL(sqlQry, function (results) {
 
         if (results.length > 0) {
@@ -16,9 +16,8 @@ exports.buscar = ('/BUSCAR/:ID', (req, res) => {
 
 })
 
-exports.inserir = ('/inserir/:NOME/:IDADE/:FOTO/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA', (req, res) => {
+exports.inserir = ('/inserir/:NOME/:IDADE/:FOTO/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIPO', (req, res) => {
 
- 
     const NOME = req.params.NOME;
     const IDADE = req.params.IDADE;
     const FOTO = req.files.file.path;
@@ -26,11 +25,12 @@ exports.inserir = ('/inserir/:NOME/:IDADE/:FOTO/:SEXO/:ESCOLARIDADE/:EMAIL/:SENH
     const ESCOLARIDADE = req.params.ESCOLARIDADE;
     const EMAIL = req.params.EMAIL;
     const SENHA = req.params.SENHA;
+    const TIPO = req.params.TIPO
 
     var fs = require('fs');
     res.setHeader("Access-Control-Allow-Origin", "*");
-    var sqlQry = `INSERT INTO USUARIO (NOME, IDADE, FOTO, SEXO, ESCOLARIDADE, EMAIL, SENHA) 
-    VALUES ('${NOME}','${IDADE}','${FOTO}','${SEXO}','${ESCOLARIDADE}','${EMAIL}','${SENHA}')`;
+    var sqlQry = `INSERT INTO USUARIO (NOME, IDADE, FOTO, SEXO, ESCOLARIDADE, EMAIL, SENHA, TIPO) 
+    VALUES ('${NOME}','${IDADE}','${FOTO}','${SEXO}','${ESCOLARIDADE}','${EMAIL}','${SENHA}','${TIPO}')`;
 
     execute.executeSQL(sqlQry, function (results) {
 
@@ -56,10 +56,9 @@ exports.inserir = ('/inserir/:NOME/:IDADE/:FOTO/:SEXO/:ESCOLARIDADE/:EMAIL/:SENH
 
 });
 
-exports.listar = ('/LISTAR', (req, res) => {
-    var sqlQry = `SELECT * FROM DOCENTE`;
+exports.listar = ('/listar', (req, res) => {
+    var sqlQry = `SELECT * FROM USUARIO`;
     execute.executeSQL(sqlQry, function (results) {
-
         if (results.length > 0) {
             res.status(200).send(results)
         } else {
