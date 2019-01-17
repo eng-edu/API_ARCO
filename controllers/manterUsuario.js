@@ -52,8 +52,6 @@ exports.inserir = ('/inserir/:NOME/:IDADE/:FOTO/:SEXO/:ESCOLARIDADE/:EMAIL/:SENH
     });
 
 
-
-
 });
 
 exports.listar = ('/listar', (req, res) => {

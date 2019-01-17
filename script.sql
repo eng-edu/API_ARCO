@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `BD`.`USUARIO` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `BD`.`ARCO` (
 	`ID` INT(11) NOT NULL AUTO_INCREMENT,
-    `TEMATICA` VARCHAR(245),
+    `ID_TEMATICA` INT(11),
 	`TITULO` VARCHAR(245),
     `ID_LIDER` INT(11),
 	`PONTO` VARCHAR(245),
@@ -34,6 +34,13 @@ CREATE TABLE IF NOT EXISTS `BD`.`ARCO` (
 	`DESLAIKE` VARCHAR(245),
     `DENUNCIA` VARCHAR(245),
 	`STATUS` VARCHAR(245),
+  PRIMARY KEY (`ID`));
+
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `BD`.`TEMATICA` (
+	`ID` INT(11) NOT NULL AUTO_INCREMENT,
+    `TITULO` VARCHAR(245),
+	`DESCRICAO` VARCHAR(245),
   PRIMARY KEY (`ID`));
 
 -- -----------------------------------------------------
