@@ -10,8 +10,8 @@ const manteArco = require('../controllers/manterArco')
 
 //rotas
 router.get('/buscar/:ID', manteArco.buscar)
-router.post('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:LIKE/:DESLAIKE/:DENUNCIA/:STATUS', manterDocente.inserir)
-router.get('/listar', manterDocente.listar)
+router.post('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:LIKE/:DESLAIKE/:DENUNCIA/:STATUS', manteArco.inserir)
+router.get('/listar', manteArco.listar)
 
 //exporta o modulo
 module.exports = router
