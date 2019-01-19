@@ -2,6 +2,22 @@
 
 const execute = require('../executeSQL');
 
+
+exports.buscarUsuarioEmailSenha = ('/buscarUsuarioEmailSenha/:EMAIL/:SENHA', (req, res) => {
+    var sqlQry = `SELECT * FROM USUARIO WHERE EMAIL = '${req.params.EMAIL}' AND SENHA = '${req.params.SENAH}'`;
+    execute.executeSQL(sqlQry, function (results) {
+
+        if (results.length > 0) {
+            res.status(200).send(results)
+        } else {
+            res.status(405).send(results);
+        }
+        console.log(results)
+    });
+
+})
+
+
 exports.buscar = ('/buscar/:ID', (req, res) => {
     var sqlQry = `SELECT * FROM USUARIO WHERE ID = '${req.params.ID}'`;
     execute.executeSQL(sqlQry, function (results) {
@@ -16,7 +32,7 @@ exports.buscar = ('/buscar/:ID', (req, res) => {
 
 })
 
-exports.inserir = ('/inserir/:NOME/:IDADE/:FOTO/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIPO', (req, res) => {
+exports.inserir = ('/inserir/:NOME/:IDADE/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIPO', (req, res) => {
 
     const NOME = req.params.NOME;
     const IDADE = req.params.IDADE;
@@ -44,7 +60,7 @@ exports.inserir = ('/inserir/:NOME/:IDADE/:FOTO/:SEXO/:ESCOLARIDADE/:EMAIL/:SENH
                     console.log(err);
                 }
             })
-            res.status(200).send({ results });
+            res.status(200).send(results['insertId'] );
         } else {
             res.status(405).send(results);
         }

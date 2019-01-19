@@ -9,8 +9,9 @@ const multiparty = require('connect-multiparty');
 const manterDocente = require('../controllers/manterUsuario')
 
 //rotas
+router.get('/buscarUsuarioEmailSenha/:EMAIL/:SENHA', manterDocente.buscarUsuarioEmailSenha)
 router.get('/buscar/:ID', manterDocente.buscar)
-router.route('/inserir/:NOME/:IDADE/:FOTO/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIPO').post(multiparty(), manterDocente.inserir)
+router.route('/inserir/:NOME/:IDADE/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIPO').post(multiparty(), manterDocente.inserir)
 router.get('/listar', manterDocente.listar)
 
 //exporta o modulo
