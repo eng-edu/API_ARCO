@@ -17,7 +17,6 @@ exports.connection = mysql.createConnection({
   database: 'BD'
 });
 
-
 //ver imagem
 app.get('/IMG/:NAME', function (req, res) {
   var filePath = "/uploads/" + req.params.NAME;
@@ -28,7 +27,6 @@ app.get('/IMG/:NAME', function (req, res) {
     res.send(data);
   });
 });
-
 
 //ver pdf link
 app.get('/PDF/:NAME', function (req, res) {
@@ -41,12 +39,10 @@ app.get('/PDF/:NAME', function (req, res) {
   });
 });
 
-
 //carregando rotas
 app.use('/index', indexRoute);
 app.use('/usuario', usuarioRoute)
 app.use(express.static('uploads'));
-
 
 //exporta o modulo
 module.exports = app;

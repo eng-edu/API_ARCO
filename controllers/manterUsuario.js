@@ -4,11 +4,11 @@ const execute = require('../executeSQL');
 
 
 exports.buscarUsuarioEmailSenha = ('/buscarUsuarioEmailSenha/:EMAIL/:SENHA', (req, res) => {
-    var sqlQry = `SELECT * FROM USUARIO WHERE EMAIL = '${req.params.EMAIL}' AND SENHA = '${req.params.SENAH}'`;
+    var sqlQry = `SELECT * FROM USUARIO WHERE EMAIL = '${req.params.EMAIL}' AND SENHA = '${req.params.SENHA}'`;
     execute.executeSQL(sqlQry, function (results) {
 
         if (results.length > 0) {
-            res.status(200).send(results)
+            res.status(200).send(results[0])
         } else {
             res.status(405).send(results);
         }
@@ -60,7 +60,7 @@ exports.inserir = ('/inserir/:NOME/:IDADE/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIP
                     console.log(err);
                 }
             })
-            res.status(200).send(results['insertId'] );
+            res.status(200).send(results);
         } else {
             res.status(405).send(results);
         }
