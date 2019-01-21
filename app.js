@@ -4,10 +4,6 @@ const express = require('express');
 const app = express();
 const mysql = require('mysql');
 
-//chama os modulos das rotas
-const indexRoute = require('./routes/index')
-const usuarioRoute = require('./routes/routerUsuario')
-
 //configura conexao com banco
 exports.connection = mysql.createConnection({
   host: 'localhost',
@@ -39,9 +35,12 @@ app.get('/PDF/:NAME', function (req, res) {
   });
 });
 
+
 //carregando rotas
-app.use('/index', indexRoute);
-app.use('/usuario', usuarioRoute)
+app.use('/index', require('./routes/index'));
+app.use('/usuario', require('./routes/routerUsuario'))
+app.use('/tematica', require('./routes/routerTematica'))
+app.use('/arco', require('./routes/routerArco'))
 app.use(express.static('uploads'));
 
 //exporta o modulo

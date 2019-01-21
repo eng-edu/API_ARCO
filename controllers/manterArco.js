@@ -42,6 +42,27 @@ exports.inserir = ('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:LIKE/:DESLAI
 
 });
 
+exports.novoArco = ('/novoArco/:ID_TEMATICA/:ID_LIDER', (req, res) => {
+
+    const ID_TEMATICA = req.params.ID_TEMATICA;
+    const ID_LIDER = req.params.ID_LIDER;
+
+    var sqlQry = `INSERT INTO ARCO (ID_TEMATICA, TITULO, ID_LIDER, PONTO, CURTIDA, DESCURTIDA, DENUNCIA, SITUACAO) 
+    VALUES (${ID_TEMATICA},'Defina um título!',${ID_LIDER},'0','0','0','0','0')`;
+
+    execute.executeSQL(sqlQry, function (results) {
+
+        if (results['insertId'] > 0) {
+            res.status(200).json(results.insertId);
+        } else {
+            res.status(405).send(results);
+        }
+        console.log(results.insertId);
+    });
+
+});
+
+
 exports.listar = ('/listar', (req, res) => {
     var sqlQry = `SELECT * FROM ARCO`;
     execute.executeSQL(sqlQry, function (results) {
