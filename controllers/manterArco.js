@@ -1,6 +1,98 @@
 'use strict';
 
+const socket = require('../server/serverSocket');
 const execute = require('../executeSQL');
+
+socket.on('connection', (io) => {
+    
+    io.on('ARCO', function (MSG) {
+        
+        var sqlQry = `SELECT * FROM INFO_ARCO WHERE ID_ARCO = ${MSG.ID_ARCO} AND ID_USUARIO = ${MSG.ID_USUARIO};`;
+    
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                buscarArco(io,MSG.ID_ARCO,'S')
+            }else{
+                buscarArco(io,MSG.ID_ARCO,'N')
+            }
+        });
+
+        
+    }) 
+
+
+    io.on('GOSTEI', function (ARCO_ID) {
+        var msg = 'GOSTEI'+ARCO_ID;
+        var sqlQry = ``;
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                io.emit(msg, results);
+                io.broadcast.emit(msg, results);
+            } 
+        });
+
+    }) 
+
+    io.on('NAO_GOSTEI', function (ARCO_ID) {
+        var msg = 'NAO_GOSTEI'+ARCO_ID;
+        var sqlQry = ``;
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                io.emit(msg, results);
+                io.broadcast.emit(msg, results);
+            } 
+        });
+
+
+
+    })
+
+    io.on('TITULO', function (ARCO_ID) {
+        var msg = 'TITULO'+ARCO_ID;
+        var sqlQry = ``;
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                io.emit(msg, results);
+                io.broadcast.emit(msg, results);
+            } 
+        });
+
+
+
+    })
+
+});
+
+function buscarArco(io ,ARCO_ID, GOSTEI) {
+    var msg = 'ARCO'+ARCO_ID;
+    var sqlQry = `SELECT 
+    a.ID,
+    a.TITULO AS TITULO_ARCO,
+    a.ID_LIDER,
+    a.PONTO,
+    a.GOSTEI,
+    a.DENUNCIA,
+    a.SITUACAO,
+    a.ID_TEMATICA,
+    t.TITULO AS TITULO_TEMATICA,
+    t.DESCRICAO
+    FROM ARCO as a 
+    inner join TEMATICA as t 
+    WHERE a.ID_TEMATICA = t.ID AND a.ID = ${ARCO_ID}`;
+
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            var json = results[0]
+            json.GOSTEI = GOSTEI
+            io.emit(msg, results);
+            io.broadcast.emit(msg, results);
+            console.log(json)
+           
+        } 
+    });
+
+}
+
 
 exports.buscar = ('/buscar/:ID', (req, res) => {
     var sqlQry = `SELECT * FROM ARCO WHERE ID = '${req.params.ID}'`;
@@ -16,19 +108,18 @@ exports.buscar = ('/buscar/:ID', (req, res) => {
 
 })
 
-exports.inserir = ('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:LIKE/:DESLAIKE/:DENUNCIA/:STATUS', (req, res) => {
+exports.inserir = ('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:GOSTEI/:DENUNCIA/:STATUS', (req, res) => {
 
     const ID_TEMATICA = req.params.ID_TEMATICA;
     const TITULO = req.params.TITULO;
     const ID_LIDER = req.params.ID_LIDER;
     const PONTO = req.params.PONTO;
-    const LIKE = req.params.LIKE;
-    const DESLAIKE = req.params.DESLAIKE;
+    const GOSTEI = req.params.GOSTEI;
     const DENUNCIA = req.params.DENUNCIA;
     const STATUS = req.params.STATUS;
 
-    var sqlQry = `INSERT INTO USUARIO (ID_TEMATICA, TITULO, ID_LIDER, PONTO, LIKE, DESLAIKE, DENUNCIA, STATUS) 
-    VALUES ('${ID_TEMATICA}','${TITULO}','${ID_LIDER}','${PONTO}','${LIKE}','${DESLAIKE}','${DENUNCIA}','${STATUS}')`;
+    var sqlQry = `INSERT INTO USUARIO (ID_TEMATICA, TITULO, ID_LIDER, PONTO, GOSTEI, DENUNCIA, STATUS) 
+    VALUES ('${ID_TEMATICA}','${TITULO}','${ID_LIDER}','${PONTO}','${GOSTEI}','${DENUNCIA}','${STATUS}')`;
 
     execute.executeSQL(sqlQry, function (results) {
 
@@ -47,8 +138,8 @@ exports.novoArco = ('/novoArco/:ID_TEMATICA/:ID_LIDER', (req, res) => {
     const ID_TEMATICA = req.params.ID_TEMATICA;
     const ID_LIDER = req.params.ID_LIDER;
 
-    var sqlQry = `INSERT INTO ARCO (ID_TEMATICA, TITULO, ID_LIDER, PONTO, CURTIDA, DESCURTIDA, DENUNCIA, SITUACAO) 
-    VALUES (${ID_TEMATICA},'Defina um título!',${ID_LIDER},'0','0','0','0','0')`;
+    var sqlQry = `INSERT INTO ARCO (ID_TEMATICA, TITULO, ID_LIDER, PONTO, GOSTEI, DENUNCIA, SITUACAO) 
+    VALUES (${ID_TEMATICA},'Defina um título!',${ID_LIDER},'0','0','0','0')`;
 
     execute.executeSQL(sqlQry, function (results) {
 
@@ -76,3 +167,38 @@ exports.listar = ('/listar', (req, res) => {
 
 })
 
+/** 
+
+contagem das curtidas...
+SELECT COUNT(TIPO)
+FROM info_arco where TIPO = 1 AND ID_ARCO = 1;
+
+saber se eu curti esse arco
+select * from info_arco where ID_USUARIO = 3;
+
+arco com tematica
+
+SELECT 
+
+a.ID,
+a.TITULO AS TITULO_ARCO,
+a.ID_LIDER,
+a.PONTO,
+a.GOSTEI,
+a.DENUNCIA,
+a.SITUACAO,
+
+a.ID_TEMATICA,
+t.TITULO AS TITULO_TEMATICA,
+t.DESCRICAO
+
+FROM ARCO as a 
+inner join TEMATICA as t 
+
+WHERE a.ID_TEMATICA = t.ID ;
+
+verificar a curtida
+SELECT COUNT(*) FROM INFO_ARCO WHERE ID_ARCO = 1 AND ID_USUARIO = 1;
+
+
+*/

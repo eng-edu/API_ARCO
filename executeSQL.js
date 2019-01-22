@@ -17,7 +17,7 @@ exports.executeSQL = function(stringSQL, callbeck){
             rows = JSON.parse(JSON.stringify(results));
             callbeck(rows);
         }
-      console.log("executou SQL:" + stringSQL);
+    //  console.log("executou SQL:" + stringSQL);
     });
     
     
