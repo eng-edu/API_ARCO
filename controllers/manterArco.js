@@ -158,7 +158,6 @@ exports.inserir = ('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:GOSTEI/:DENU
         } else {
             res.status(405).send(results);
         }
-        console.log(results);
     });
 
 });
@@ -179,21 +178,13 @@ exports.novoArco = ('/novoArco/:ID_TEMATICA/:ID_LIDER', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results.insertId);
     });
-
-
-
 });
 
-function inserirEquipe(ID_ARCO, ID_LIDER) {
-    
+function inserirEquipe(ID_ARCO, ID_LIDER) {   
     var sqlQry2 = `INSERT INTO EQUIPE (ID_USUARIO, ID_ARCO) VALUES (${ID_LIDER},${ID_ARCO})`;
-
     execute.executeSQL(sqlQry2, function (results) {
     });
-
-
 }
 
 exports.listar = ('/listar', (req, res) => {
@@ -208,39 +199,3 @@ exports.listar = ('/listar', (req, res) => {
     });
 
 })
-
-/**
-
-contagem das curtidas...
-SELECT COUNT(TIPO)
-FROM info_arco where TIPO = 1 AND ID_ARCO = 1;
-
-saber se eu curti esse arco
-select * from info_arco where ID_USUARIO = 3;
-
-arco com tematica
-
-SELECT
-
-a.ID,
-a.TITULO AS TITULO_ARCO,
-a.ID_LIDER,
-a.PONTO,
-a.GOSTEI,
-a.DENUNCIA,
-a.SITUACAO,
-
-a.ID_TEMATICA,
-t.TITULO AS TITULO_TEMATICA,
-t.DESCRICAO
-
-FROM ARCO as a
-inner join TEMATICA as t
-
-WHERE a.ID_TEMATICA = t.ID ;
-
-verificar a curtida
-SELECT COUNT(*) FROM INFO_ARCO WHERE ID_ARCO = 1 AND ID_USUARIO = 1;
-
-
-*/
