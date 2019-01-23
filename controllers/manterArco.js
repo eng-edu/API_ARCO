@@ -11,15 +11,14 @@ socket.on('connection', (io) => {
     
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-                buscarArco(io,MSG.ID_ARCO,'S')
+                buscarCurtidas(io,MSG.ID_ARCO,'S')
             }else{
-                buscarArco(io,MSG.ID_ARCO,'N')
+                buscarCurtidas(io,MSG.ID_ARCO,'N')
             }
         });
 
         
     }) 
-
 
     io.on('GOSTEI', function (ARCO_ID) {
         var msg = 'GOSTEI'+ARCO_ID;
@@ -63,7 +62,16 @@ socket.on('connection', (io) => {
 
 });
 
-function buscarArco(io ,ARCO_ID, GOSTEI) {
+function buscarCurtidas(io ,ID_ARCO, EU_GOSTEI){
+   
+    var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO};`;
+   
+    execute.executeSQL(sqlQry, function (results) {    
+        buscarArco(io,ID_ARCO,EU_GOSTEI, results[0]['COUNT(*)']) 
+    });
+}
+
+function buscarArco(io ,ARCO_ID, EU_GOSTEI, GOSTEI) {
     var msg = 'ARCO'+ARCO_ID;
     var sqlQry = `SELECT 
     a.ID,
@@ -82,12 +90,11 @@ function buscarArco(io ,ARCO_ID, GOSTEI) {
 
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
-            var json = results[0]
-            json.GOSTEI = GOSTEI
+            results[0].EU_GOSTEI = EU_GOSTEI
+            results[0].GOSTEI = GOSTEI
             io.emit(msg, results);
             io.broadcast.emit(msg, results);
-            console.log(json)
-           
+            console.log(results)
         } 
     });
 
