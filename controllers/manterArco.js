@@ -4,26 +4,53 @@ const socket = require('../server/serverSocket');
 const execute = require('../executeSQL');
 
 socket.on('connection', (io) => {
-    
+
     io.on('ARCO', function (MSG) {
-        
-        var sqlQry = `SELECT * FROM INFO_ARCO WHERE ID_ARCO = ${MSG.ID_ARCO} AND ID_USUARIO = ${MSG.ID_USUARIO};`; 
-       
+
+        var sqlQry = `SELECT * FROM INFO_ARCO WHERE ID_ARCO = ${MSG.ID_ARCO} AND ID_USUARIO = ${MSG.ID_USUARIO};`;
+
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-                buscarCurtidas(io,MSG.ID_ARCO,'S')
-            }else{
-                buscarCurtidas(io,MSG.ID_ARCO,'N')
+                buscarCurtidas(io, MSG.ID_ARCO, 'S')
+            } else {
+                buscarCurtidas(io, MSG.ID_ARCO, 'N')
             }
         });
 
-        
-    }) 
+
+    })
+
+    io.on('TITULO', function (MSG) {
+
+        var sqlQry = `UPDATE ARCO SET TITULO = '${MSG}';`;
+
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                console.log(results)
+            }
+        });
+
+
+    })
+
+    io.on('GOSTEI', function (MSG) {
+
+        var sqlQry = `INSERT INTO INFO_ARCO (ID_USUARIO, ID_ARCO, TIPO) 
+            VALUES ('${MSG.ID_USUARIO}','${MSG.ID_ARCO}','1');`;
+
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                console.log(results)
+            }
+        });
+
+
+    })
 
     io.on('ETAPA', function (MSG) {
-        
-        var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${MSG.ID_ARCO};`; 
-       
+
+        var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${MSG.ID_ARCO};`;
+
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
                 io.emit(msg, results);
@@ -31,22 +58,23 @@ socket.on('connection', (io) => {
             }
         });
 
-        
-    }) 
+
+    })
 
 });
 
-function buscarCurtidas(io ,ID_ARCO, EU_GOSTEI){
-   
+function buscarCurtidas(io, ID_ARCO, EU_GOSTEI) {
+
     var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO};`;
-   
-    execute.executeSQL(sqlQry, function (results) {    
-        buscarArco(io,ID_ARCO,EU_GOSTEI, results[0]['COUNT(*)']) 
+
+    execute.executeSQL(sqlQry, function (results) {
+        buscarArco(io, ID_ARCO, EU_GOSTEI, results[0]['COUNT(*)'])
+        execute.executeSQL(`UPDATE ARCO SET GOSTEI = '${results[0]['COUNT(*)']}'`, function (results) { });
     });
 }
 
-function buscarArco(io ,ARCO_ID, EU_GOSTEI, GOSTEI) {
-    var msg = 'ARCO'+ARCO_ID;
+function buscarArco(io, ARCO_ID, EU_GOSTEI, GOSTEI) {
+    var msg = 'ARCO' + ARCO_ID;
     var sqlQry = `SELECT 
     a.ID,
     a.TITULO AS TITULO_ARCO,
@@ -69,7 +97,7 @@ function buscarArco(io ,ARCO_ID, EU_GOSTEI, GOSTEI) {
             io.emit(msg, results[0]);
             io.broadcast.emit(msg, results[0]);
             console.log(results[0])
-        } 
+        }
     });
 
 }
@@ -140,21 +168,33 @@ exports.novoArco = ('/novoArco/:ID_TEMATICA/:ID_LIDER', (req, res) => {
     const ID_TEMATICA = req.params.ID_TEMATICA;
     const ID_LIDER = req.params.ID_LIDER;
 
-    var sqlQry = `INSERT INTO ARCO (ID_TEMATICA, TITULO, ID_LIDER, PONTO, GOSTEI, DENUNCIA, SITUACAO) 
+    var sqlQry1 = `INSERT INTO ARCO (ID_TEMATICA, TITULO, ID_LIDER, PONTO, GOSTEI, DENUNCIA, SITUACAO) 
     VALUES (${ID_TEMATICA},'Defina um título!',${ID_LIDER},'0','0','0','0')`;
 
-    execute.executeSQL(sqlQry, function (results) {
+    execute.executeSQL(sqlQry1, function (results) {
 
         if (results['insertId'] > 0) {
             res.status(200).json(results.insertId);
+            inserirEquipe(results['insertId'], ID_LIDER)
         } else {
             res.status(405).send(results);
         }
         console.log(results.insertId);
     });
 
+
+
 });
 
+function inserirEquipe(ID_ARCO, ID_LIDER) {
+    
+    var sqlQry2 = `INSERT INTO EQUIPE (ID_USUARIO, ID_ARCO) VALUES (${ID_LIDER},${ID_ARCO})`;
+
+    execute.executeSQL(sqlQry2, function (results) {
+    });
+
+
+}
 
 exports.listar = ('/listar', (req, res) => {
     var sqlQry = `SELECT * FROM ARCO`;
@@ -169,7 +209,7 @@ exports.listar = ('/listar', (req, res) => {
 
 })
 
-/** 
+/**
 
 contagem das curtidas...
 SELECT COUNT(TIPO)
@@ -180,7 +220,7 @@ select * from info_arco where ID_USUARIO = 3;
 
 arco com tematica
 
-SELECT 
+SELECT
 
 a.ID,
 a.TITULO AS TITULO_ARCO,
@@ -194,8 +234,8 @@ a.ID_TEMATICA,
 t.TITULO AS TITULO_TEMATICA,
 t.DESCRICAO
 
-FROM ARCO as a 
-inner join TEMATICA as t 
+FROM ARCO as a
+inner join TEMATICA as t
 
 WHERE a.ID_TEMATICA = t.ID ;
 
