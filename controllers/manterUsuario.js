@@ -88,7 +88,7 @@ exports.alterarComFoto = ('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE'
 
             var CAMINHO = './uploads/' + ID + "_usuario.jpg"
             var TEMP = req.files.file.path;
-    
+
             fs.rename(TEMP, CAMINHO, function (err) {
                 if (err) {
                     console.log(err);
@@ -141,8 +141,30 @@ exports.listar = ('/listar', (req, res) => {
         }
         console.log(results)
 
-       
+
     });
 
 })
 
+exports.novoMenbro = ('/novoMenbro/:ID_USUARIO/:ID_ARCO', (req, res) => {
+
+    var sqlQry = `SELECT COUNT(*) FROM EQUIPE WHERE ID_ARCO = ${req.params.ID_ARCO}`;
+
+    execute.executeSQL(sqlQry, function (results) {
+        if (results[0]['COUNT(*)']<10) {
+            res.status(200).send(results)
+            inserirNovoMenbro(req.params.ID_ARCO, req.params.ID_USUARIO)
+        } else {
+            res.status(405).send(results);
+        }
+        console.log(results)
+    });
+
+
+})
+
+function inserirNovoMenbro(ID_ARCO, ID_USUARIO) {
+    var sqlQry = `INSERT INTO EQUIPE (ID_USUARIO, ID_ARCO) VALUES (${ID_USUARIO}, ${ID_ARCO})`;
+    execute.executeSQL(sqlQry, function (results) {
+    });
+}
