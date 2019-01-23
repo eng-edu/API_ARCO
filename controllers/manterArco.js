@@ -47,6 +47,19 @@ socket.on('connection', (io) => {
 
     })
 
+    io.on('NGOSTEI', function (MSG) {
+
+        var sqlQry = `DELETE FROM INFO_ARCO WHERE ID_USUARIO = ${MSG.ID_USUARIO} AND ID_ARCO = ${MSG.ID_ARCO};`;
+
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                console.log(results)
+            }
+        });
+
+
+    })
+
     io.on('ETAPA', function (MSG) {
 
         var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${MSG.ID_ARCO};`;
@@ -69,7 +82,7 @@ function buscarCurtidas(io, ID_ARCO, EU_GOSTEI) {
 
     execute.executeSQL(sqlQry, function (results) {
         buscarArco(io, ID_ARCO, EU_GOSTEI, results[0]['COUNT(*)'])
-        execute.executeSQL(`UPDATE ARCO SET GOSTEI = '${results[0]['COUNT(*)']}'`, function (results) { });
+        execute.executeSQL(`UPDATE ARCO SET GOSTEI = '${results[0]['COUNT(*)']}' WHERE ID = ${ID_ARCO}`, function (results) { });
     });
 }
 
