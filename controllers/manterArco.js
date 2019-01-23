@@ -7,8 +7,8 @@ socket.on('connection', (io) => {
     
     io.on('ARCO', function (MSG) {
         
-        var sqlQry = `SELECT * FROM INFO_ARCO WHERE ID_ARCO = ${MSG.ID_ARCO} AND ID_USUARIO = ${MSG.ID_USUARIO};`;
-    
+        var sqlQry = `SELECT * FROM INFO_ARCO WHERE ID_ARCO = ${MSG.ID_ARCO} AND ID_USUARIO = ${MSG.ID_USUARIO};`; 
+       
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
                 buscarCurtidas(io,MSG.ID_ARCO,'S')
@@ -20,45 +20,19 @@ socket.on('connection', (io) => {
         
     }) 
 
-    io.on('GOSTEI', function (ARCO_ID) {
-        var msg = 'GOSTEI'+ARCO_ID;
-        var sqlQry = ``;
+    io.on('ETAPA', function (MSG) {
+        
+        var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${MSG.ID_ARCO};`; 
+       
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
                 io.emit(msg, results);
                 io.broadcast.emit(msg, results);
-            } 
+            }
         });
 
+        
     }) 
-
-    io.on('NAO_GOSTEI', function (ARCO_ID) {
-        var msg = 'NAO_GOSTEI'+ARCO_ID;
-        var sqlQry = ``;
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-                io.emit(msg, results);
-                io.broadcast.emit(msg, results);
-            } 
-        });
-
-
-
-    })
-
-    io.on('TITULO', function (ARCO_ID) {
-        var msg = 'TITULO'+ARCO_ID;
-        var sqlQry = ``;
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-                io.emit(msg, results);
-                io.broadcast.emit(msg, results);
-            } 
-        });
-
-
-
-    })
 
 });
 
@@ -92,9 +66,9 @@ function buscarArco(io ,ARCO_ID, EU_GOSTEI, GOSTEI) {
         if (results.length > 0) {
             results[0].EU_GOSTEI = EU_GOSTEI
             results[0].GOSTEI = GOSTEI
-            io.emit(msg, results);
-            io.broadcast.emit(msg, results);
-            console.log(results)
+            io.emit(msg, results[0]);
+            io.broadcast.emit(msg, results[0]);
+            console.log(results[0])
         } 
     });
 
@@ -105,6 +79,27 @@ exports.buscar = ('/buscar/:ID', (req, res) => {
     var sqlQry = `SELECT * FROM ARCO WHERE ID = '${req.params.ID}'`;
     execute.executeSQL(sqlQry, function (results) {
 
+        if (results.length > 0) {
+            res.status(200).send(results)
+        } else {
+            res.status(405).send(results);
+        }
+        console.log(results)
+    });
+
+})
+
+exports.buscarMeusArcos = ('/buscar/:ID_USUARIO', (req, res) => {
+    var sqlQry = `SELECT 
+    a.ID, t.TITULO as TEMATICA, a.TITULO, a.PONTO, a.GOSTEI 
+    FROM ARCO as a 
+    inner join TEMATICA as t 
+    inner join EQUIPE as e
+    WHERE a.ID_TEMATICA = t.ID 
+    AND e.ID_ARCO = a.ID
+    AND e.ID_USUARIO = '${req.params.ID_USUARIO}'`;
+
+    execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             res.status(200).send(results)
         } else {

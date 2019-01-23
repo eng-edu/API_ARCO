@@ -10,6 +10,7 @@ const manteArco = require('../controllers/manterArco')
 
 //rotas
 router.get('/buscar/:ID', manteArco.buscar)
+router.get('/buscarMeusArcos/:ID_USUARIO', manteArco.buscarMeusArcos)
 router.post('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:GOSTEI/:DENUNCIA/:STATUS', manteArco.inserir)
 router.post('/novoArco/:ID_TEMATICA/:ID_LIDER', manteArco.novoArco)
 router.get('/listar', manteArco.listar)
