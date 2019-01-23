@@ -78,7 +78,7 @@ socket.on('connection', (io) => {
 
 function buscarCurtidas(io, ID_ARCO, EU_GOSTEI) {
 
-    var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO};`;
+    var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO} AND i.TIPO = 1;`;
 
     execute.executeSQL(sqlQry, function (results) {
         buscarArco(io, ID_ARCO, EU_GOSTEI, results[0]['COUNT(*)'])
@@ -109,12 +109,10 @@ function buscarArco(io, ARCO_ID, EU_GOSTEI, GOSTEI) {
             results[0].GOSTEI = GOSTEI
             io.emit(msg, results[0]);
             io.broadcast.emit(msg, results[0]);
-            console.log(results[0])
         }
     });
 
 }
-
 
 exports.buscar = ('/buscar/:ID', (req, res) => {
     var sqlQry = `SELECT * FROM ARCO WHERE ID = '${req.params.ID}'`;
@@ -125,7 +123,6 @@ exports.buscar = ('/buscar/:ID', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
     });
 
 })
@@ -146,7 +143,6 @@ exports.buscarMeusArcos = ('/buscar/:ID_USUARIO', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
     });
 
 })
@@ -194,7 +190,7 @@ exports.novoArco = ('/novoArco/:ID_TEMATICA/:ID_LIDER', (req, res) => {
     });
 });
 
-function inserirEquipe(ID_ARCO, ID_LIDER) {   
+function inserirEquipe(ID_ARCO, ID_LIDER) {
     var sqlQry2 = `INSERT INTO EQUIPE (ID_USUARIO, ID_ARCO) VALUES (${ID_LIDER},${ID_ARCO})`;
     execute.executeSQL(sqlQry2, function (results) {
     });
@@ -208,7 +204,18 @@ exports.listar = ('/listar', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
     });
 
 })
+
+exports.denunciarArco = ('/denunciarArco/:ID_USUARIO/:ID_ARCO/:DESCRICAO', (req, res) => {
+   
+    var sqlQry = `INSERT INTO INFO_ARCO (ID_USUARIO, ID_ARCO, DESCRICAO, TIPO)
+     VALUES (${req.params.ID_USUARIO}, ${req.params.ID_ARCO}, '${req.params.DESCRICAO}','2')`;
+
+    execute.executeSQL(sqlQry, function (results) {
+        res.status(200).send(results)
+    });
+
+})
+
