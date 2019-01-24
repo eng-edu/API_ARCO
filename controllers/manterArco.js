@@ -74,6 +74,21 @@ socket.on('connection', (io) => {
 
     })
 
+    io.on('EQUIPE', function (MSG) {
+
+        var sqlQry = `SELECT u.ID, u.NOME, u.EMAIL FROM EQUIPE AS e INNER JOIN USUARIO as u ON u.ID = e.ID_USUARIO WHERE ID_ARCO = ${MSG};`;
+
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                io.emit("EQUIPE"+MSG, results);
+                io.broadcast.emit("EQUIPE"+MSG, results);
+                console.log(results)
+            }
+        });
+
+
+    })
+
 });
 
 function buscarCurtidas(io, ID_ARCO, EU_GOSTEI) {
@@ -128,14 +143,14 @@ exports.buscar = ('/buscar/:ID', (req, res) => {
 })
 
 exports.buscarMeusArcos = ('/buscar/:ID_USUARIO', (req, res) => {
-    var sqlQry = `SELECT 
-    a.ID, t.TITULO as TEMATICA, a.TITULO, a.PONTO, a.GOSTEI 
+    var sqlQry = `SELECT a.ID, t.TITULO as TEMATICA, a.TITULO, a.PONTO, a.GOSTEI 
     FROM ARCO as a 
     inner join TEMATICA as t 
     inner join EQUIPE as e
-    WHERE a.ID_TEMATICA = t.ID 
+	ON a.ID_TEMATICA = t.ID 
     AND e.ID_ARCO = a.ID
-    AND e.ID_USUARIO = '${req.params.ID_USUARIO}'`;
+    AND e.ID_USUARIO = ${req.params.ID_USUARIO}
+    GROUP BY a.ID;`;
 
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
