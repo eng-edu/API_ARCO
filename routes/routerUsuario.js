@@ -15,7 +15,7 @@ router.route('/inserir/:NOME/:IDADE/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIPO').po
 router.route('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE').put(multiparty(), manterUsuario.alterarComFoto)
 router.put('/alterar/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE', manterUsuario.alterar)
 router.post('/novoMenbro/:ID_USUARIO/:ID_ARCO', manterUsuario.novoMenbro)
-router.get('/listar', manterUsuario.listar)
+router.get('/listar/:ID_ARCO', manterUsuario.listar)
 
 //exporta o modulo
 module.exports = router

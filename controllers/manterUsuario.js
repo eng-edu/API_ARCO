@@ -131,8 +131,17 @@ exports.alterar = ('/alterar/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE', (req, res) =
 });
 
 
-exports.listar = ('/listar', (req, res) => {
-    var sqlQry = `SELECT * FROM USUARIO`;
+exports.listar = ('/listar/:ID_ARCO', (req, res) => {
+    
+    var sqlQry = `SELECT 
+    u.ID, u.NOME, u.EMAIL
+FROM
+    USUARIO AS u
+        LEFT JOIN
+    EQUIPE AS e ON u.ID = e.ID_USUARIO AND e.ID_ARCO = ${req.params.ID_ARCO}
+WHERE
+    e.ID_USUARIO IS NULL;`;
+
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             res.status(200).send(results)

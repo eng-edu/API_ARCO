@@ -76,7 +76,7 @@ socket.on('connection', (io) => {
 
     io.on('EQUIPE', function (MSG) {
 
-        var sqlQry = `SELECT u.ID, u.NOME, u.EMAIL FROM EQUIPE AS e INNER JOIN USUARIO as u ON u.ID = e.ID_USUARIO WHERE ID_ARCO = ${MSG};`;
+        var sqlQry = `SELECT u.ID, u.NOME, u.EMAIL FROM EQUIPE AS e INNER JOIN USUARIO as u ON u.ID = e.ID_USUARIO WHERE u.TIPO = 2 AND ID_ARCO = ${MSG};`;
 
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
