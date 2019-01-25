@@ -9,7 +9,7 @@ const multiparty = require('connect-multiparty');
 const manterEtapa = require('../controllers/manterEtapa')
 
 //rotas
-router.get('/buscar/:ID', manterEtapa.buscar)
+router.get('/buscar/:ID_ARCO', manterEtapa.buscar)
 router.post('/inserir/:CODIGO/:TITULO/:ID_ARCO/:TEXTO/:PONTO/:STATUS', manterEtapa.inserir)
 router.get('/listar', manterEtapa.listar)
 

@@ -2,8 +2,8 @@
 
 const execute = require('../executeSQL');
 
-exports.buscar = ('/buscar/:ID', (req, res) => {
-    var sqlQry = `SELECT * FROM ETAPA WHERE ID = '${req.params.ID}'`;
+exports.buscar = ('/buscar/:ID_ARCO', (req, res) => {
+    var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${req.params.ID_ARCO} AND SITUACAO = 1 OR SITUACAO = 3;`;
     execute.executeSQL(sqlQry, function (results) {
 
         if (results.length > 0) {

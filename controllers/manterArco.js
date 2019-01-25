@@ -62,12 +62,12 @@ socket.on('connection', (io) => {
 
     io.on('ETAPA', function (MSG) {
 
-        var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${MSG.ID_ARCO};`;
+        var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${MSG};`;
 
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-                io.emit(msg, results);
-                io.broadcast.emit(msg, results);
+                io.emit("ETAPA"+MSG, results);
+                io.broadcast.emit("ETAPA"+MSG, results);
             }
         });
 
@@ -80,8 +80,8 @@ socket.on('connection', (io) => {
 
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-                io.emit("EQUIPE"+MSG, results);
-                io.broadcast.emit("EQUIPE"+MSG, results);
+                io.emit("EQUIPE" + MSG, results);
+                io.broadcast.emit("EQUIPE" + MSG, results);
                 console.log(results)
             }
         });
@@ -208,8 +208,25 @@ exports.novoArco = ('/novoArco/:ID_TEMATICA/:ID_LIDER', (req, res) => {
 function inserirEquipe(ID_ARCO, ID_LIDER) {
     var sqlQry2 = `INSERT INTO EQUIPE (ID_USUARIO, ID_ARCO) VALUES (${ID_LIDER},${ID_ARCO})`;
     execute.executeSQL(sqlQry2, function (results) {
+        inserirEtapas(ID_ARCO)
     });
 }
+
+function inserirEtapas(ID_ARCO) {
+
+    var sqlQry2 = `INSERT INTO ETAPA (CODIGO, TITULO, ID_ARCO, TEXTO, PONTO, SITUACAO) VALUES 
+    ('1','OBSERVAÇÃO DA REALIDADE',${ID_ARCO},'Desenvolva sua idéia aqui...','0','1'),
+    ('2','PONTOS CHAVES',${ID_ARCO},'Desenvolva sua idéia aqui...','0','0'),
+    ('3','TEORIZAÇÃO',${ID_ARCO},'Desenvolva sua idéia aqui...','0','0'),
+    ('4','HIPÓTESES DE SOLUÇÃO',${ID_ARCO},'Desenvolva sua idéia aqui...','0','0'),
+    ('5','APLICAÇÃO A REALIDADE',${ID_ARCO},'Desenvolva sua idéia aqui...','0','0')`;
+
+    execute.executeSQL(sqlQry2, function (results) {
+    });
+}
+
+
+
 
 exports.listar = ('/listar', (req, res) => {
     var sqlQry = `SELECT * FROM ARCO`;
@@ -224,7 +241,7 @@ exports.listar = ('/listar', (req, res) => {
 })
 
 exports.denunciarArco = ('/denunciarArco/:ID_USUARIO/:ID_ARCO/:DESCRICAO', (req, res) => {
-   
+
     var sqlQry = `INSERT INTO INFO_ARCO (ID_USUARIO, ID_ARCO, DESCRICAO, TIPO)
      VALUES (${req.params.ID_USUARIO}, ${req.params.ID_ARCO}, '${req.params.DESCRICAO}','2')`;
 
