@@ -63,20 +63,51 @@ socket.on('connection', (io) => {
 
     io.on('EQUIPE', function (MSG) {
 
-        var sqlQry = `SELECT u.ID, u.NOME, u.EMAIL FROM EQUIPE AS e INNER JOIN USUARIO as u ON u.ID = e.ID_USUARIO WHERE u.TIPO = 2 AND ID_ARCO = ${MSG};`;
-
+        var sqlQry = `SELECT u.ID, u.NOME, u.EMAIL FROM EQUIPE AS e INNER JOIN USUARIO as u ON u.ID = e.ID_USUARIO WHERE u.TIPO = 2 AND ID_ARCO = ${MSG.ID_ARCO};`;   
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-                io.emit("EQUIPE" + MSG, results);
-                io.broadcast.emit("EQUIPE" + MSG, results);
-                console.log(results)
+                soulider(MSG.ID_USUARIO,MSG.ID_ARCO, io, results)
             }
         });
-
 
     })
 
 });
+
+
+function soulider(ID_USUARIO, ID_ARCO, io, json) {
+    var sqlQry = `SELECT * FROM ARCO WHERE ID_LIDER = ${ID_USUARIO} AND ID = ${ID_ARCO};`;
+    execute.executeSQL(sqlQry, function (results) {
+        var x;
+        if (results.length > 0) {
+            x = 'S'
+        } else {
+            x = 'N'
+        }
+        souMenbro(ID_USUARIO, ID_ARCO, io, json, x)
+
+    });
+}
+
+function souMenbro(ID_USUARIO, ID_ARCO, io, json, SOULIDER) {
+    var sqlQry = `SELECT * FROM EQUIPE WHERE ID_USUARIO = ${ID_USUARIO} AND ID_ARCO = ${ID_ARCO};`;
+    execute.executeSQL(sqlQry, function (results) {
+
+        var x;
+        if (results.length > 0) {
+            x = 'S'
+        } else {
+            x = 'N'
+        }
+        json[0].SOULIDER = SOULIDER
+        json[0].SOUMENBRO = x
+        io.emit("EQUIPE"+ID_ARCO, json);
+        io.broadcast.emit("EQUIPE"+ID_ARCO, json);
+        console.log(json)
+
+    });
+}
+
 
 function buscarCurtidas(io, ID_ARCO, EU_GOSTEI) {
 
