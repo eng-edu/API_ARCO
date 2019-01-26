@@ -140,7 +140,7 @@ FROM
         LEFT JOIN
     EQUIPE AS e ON u.ID = e.ID_USUARIO AND e.ID_ARCO = ${req.params.ID_ARCO}
 WHERE
-    e.ID_USUARIO IS NULL;`;
+    e.ID_USUARIO IS NULL AND u.TIPO = 2;`;
 
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
