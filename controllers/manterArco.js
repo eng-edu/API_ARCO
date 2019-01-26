@@ -60,19 +60,6 @@ socket.on('connection', (io) => {
 
     })
 
-    io.on('ETAPA', function (MSG) {
-
-        var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${MSG};`;
-
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-                io.emit("ETAPA"+MSG, results);
-                io.broadcast.emit("ETAPA"+MSG, results);
-            }
-        });
-
-
-    })
 
     io.on('EQUIPE', function (MSG) {
 
