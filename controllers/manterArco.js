@@ -4,20 +4,33 @@ const socket = require('../server/serverSocket');
 const execute = require('../executeSQL');
 
 socket.on('connection', (io) => {
+
     io.on('ARCO', function (ID_ARCO) {
-        atualizarPontos(ID_ARCO)
-        atualizarCurtidas(ID_ARCO)
-        atualizarDenuncias(ID_ARCO)
-        buscarArco(io, ID_ARCO)
+        atualizarPontos(io,ID_ARCO)
+
     })
 
     io.on('TITULO', function (MSG) {
-        var sqlQry = `UPDATE ARCO SET TITULO = '${MSG}';`;
+        var sqlQry = `UPDATE ARCO SET TITULO = '${MSG.TITULO}' WHERE ID = ${MSG.ID_ARCO};`;
+        execute.executeSQL(sqlQry, function (results) {
+        });
+    })
+
+    io.on('EU_GOSTEI', function (MSG) {
+        var sqlQry = `SELECT COUNT(*) AS EU_CURTI FROM
+        ARCO AS a
+            INNER JOIN
+        INFO_ARCO AS i ON a.ID = i.ID_ARCO WHERE a.ID = ${MSG.ID_ARCO} AND i.ID_USUARIO = ${MSG.ID_USUARIO};`;
+
+        var msg = "EU_GOSTEI" + MSG.ID_USUARIO
+
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-                console.log(results)
+                io.emit(msg, results[0]);
+                io.broadcast.emit(msg, results[0]);
             }
         });
+
     })
 
     io.on('GOSTEI', function (MSG) {
@@ -41,7 +54,7 @@ socket.on('connection', (io) => {
 
     io.on('EQUIPE', function (ID_ARCO) {
         var msg = 'EQUIPE' + ID_ARCO;
-        var sqlQry = `SELECT u.ID, u.NOME, u.EMAIL FROM EQUIPE AS e INNER JOIN USUARIO as u ON u.ID = e.ID_USUARIO WHERE u.TIPO = 2 AND ID_ARCO = ${ID_ARCO};`;
+        var sqlQry = `SELECT u.ID, u.NOME, u.EMAIL FROM EQUIPE AS e INNER JOIN USUARIO as u ON u.ID = e.ID_USUARIO WHERE u.TIPO = 2 AND ID_ARCO = ${ID_ARCO} GROUP BY e.ID_USUARIO;`;
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
                 io.emit(msg, results);
@@ -72,6 +85,7 @@ socket.on('connection', (io) => {
         });
 
     })
+
     io.on('FINALIZAR_MENBRO', function (MSG) {
         var sqlQry = `UPDATE ETAPA SET TEXTO = '${MSG.TEXTO}', SITUACAO = 2 WHERE CODIGO = ${MSG.CODIGO} AND ID_ARCO = ${MSG.ID_ARCO};`;
         execute.executeSQL(sqlQry, function (results) {
@@ -86,24 +100,31 @@ socket.on('connection', (io) => {
 
 });
 
-function atualizarPontos(ID_ARCO) {
+function atualizarPontos(io,ID_ARCO) {
     var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ETAPA WHERE ID_ARCO = ${ID_ARCO};`;
     execute.executeSQL(sqlQry, function (results) {
-        execute.executeSQL(`UPDATE ARCO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_ARCO}`, function (results) { });
+        execute.executeSQL(`UPDATE ARCO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_ARCO}`, function (results) {
+            atualizarCurtidas(io,ID_ARCO)
+        });
     });
 }
 
-function atualizarCurtidas(ID_ARCO) {
+function atualizarCurtidas(io,ID_ARCO) {
     var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO} AND i.TIPO = 1;`;
     execute.executeSQL(sqlQry, function (results) {
-        execute.executeSQL(`UPDATE ARCO SET GOSTEI = '${results[0]['COUNT(*)']}' WHERE ID = ${ID_ARCO}`, function (results) { });
+        execute.executeSQL(`UPDATE ARCO SET GOSTEI = '${results[0]['COUNT(*)']}' WHERE ID = ${ID_ARCO}`, function (results) {
+            atualizarDenuncias(io,ID_ARCO)
+
+        });
     });
 }
 
-function atualizarDenuncias(ID_ARCO) {
+function atualizarDenuncias(io,ID_ARCO) {
     var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO} AND i.TIPO = 2;`;
     execute.executeSQL(sqlQry, function (results) {
-        execute.executeSQL(`UPDATE ARCO SET DENUNCIA = '${results[0]['COUNT(*)']}' WHERE ID = ${ID_ARCO}`, function (results) { });
+        execute.executeSQL(`UPDATE ARCO SET DENUNCIA = '${results[0]['COUNT(*)']}' WHERE ID = ${ID_ARCO}`, function (results) {
+            buscarArco(io, ID_ARCO)
+        });
     });
 }
 
@@ -127,7 +148,6 @@ function buscarArco(io, ARCO_ID) {
         if (results.length > 0) {
             io.emit(msg, results[0]);
             io.broadcast.emit(msg, results[0]);
-            console.log(results[0])
         }
     });
 }
