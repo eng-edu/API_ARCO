@@ -15,6 +15,7 @@ router.post('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:GOSTEI/:DENUNCIA/:S
 router.post('/novoArco/:ID_TEMATICA/:ID_LIDER', manteArco.novoArco)
 router.post('/denunciarArco/:ID_USUARIO/:ID_ARCO/:DESCRICAO', manteArco.denunciarArco)
 router.get('/listar', manteArco.listar)
-
+router.get('/buscarArcosComaprtilhados', manteArco.buscarArcosComaprtilhados)
+router.get('/buscarRanking',manteArco.buscarRanking)
 //exporta o modulo
 module.exports = router

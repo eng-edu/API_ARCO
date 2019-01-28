@@ -291,3 +291,33 @@ exports.denunciarArco = ('/denunciarArco/:ID_USUARIO/:ID_ARCO/:DESCRICAO', (req,
 
 })
 
+exports.buscarArcosComaprtilhados = ('/buscarArcosComaprtilhados', (req, res) => {
+    var sqlQry = `SELECT a.ID, t.TITULO as TEMATICA, a.TITULO, a.PONTO, a.GOSTEI 
+    FROM ARCO as a 
+    inner join TEMATICA as t 
+    inner join EQUIPE as e
+	ON a.ID_TEMATICA = t.ID 
+    AND e.ID_ARCO = a.ID
+    GROUP BY a.ID;`;
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            res.status(200).send(results)
+        } else {
+            res.status(405).send(results);
+        }
+    });
+
+
+})
+
+exports.buscarRanking = ('/buscarRanking', (req, res) => {
+    var sqlQry = `SELECT * FROM USUARIO ORDER BY PONTO DESC LIMIT 10`;
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            res.status(200).send(results)
+        } else {
+            res.status(405).send(results);
+        }
+    });
+
+})
