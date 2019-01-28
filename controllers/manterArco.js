@@ -38,7 +38,7 @@ socket.on('connection', (io) => {
             VALUES ('${MSG.ID_USUARIO}','${MSG.ID_ARCO}','1');`;
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-                console.log(results)
+
             }
         });
     })
@@ -47,7 +47,6 @@ socket.on('connection', (io) => {
         var sqlQry = `DELETE FROM INFO_ARCO WHERE ID_USUARIO = ${MSG.ID_USUARIO} AND ID_ARCO = ${MSG.ID_ARCO};`;
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-                console.log(results)
             }
         });
     })
@@ -60,7 +59,6 @@ socket.on('connection', (io) => {
                 io.emit(msg, results);
                 io.broadcast.emit(msg, results);
             }
-            console.log(results)
         });
     })
 
@@ -83,6 +81,8 @@ socket.on('connection', (io) => {
         var sqlQry2 = `UPDATE ETAPA SET SITUACAO = 1 WHERE CODIGO = ${prox} AND ID_ARCO = ${MSG.ID_ARCO};`;
         execute.executeSQL(sqlQry2, function (results) {
         });
+
+        console.log(MSG)
 
     })
 

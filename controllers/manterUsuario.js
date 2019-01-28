@@ -14,7 +14,6 @@ exports.buscarUsuarioEmailSenha = ('/buscarUsuarioEmailSenha/:EMAIL/:SENHA', (re
         }
         console.log(results)
     });
-
 })
 
 
