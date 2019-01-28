@@ -35,7 +35,6 @@ exports.inserir = ('/inserir/:NOME/:IDADE/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIP
 
     const NOME = req.params.NOME;
     const IDADE = req.params.IDADE;
-    const FOTO = req.files.file.path;
     const SEXO = req.params.SEXO;
     const ESCOLARIDADE = req.params.ESCOLARIDADE;
     const EMAIL = req.params.EMAIL;
@@ -44,8 +43,8 @@ exports.inserir = ('/inserir/:NOME/:IDADE/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIP
 
     var fs = require('fs');
     res.setHeader("Access-Control-Allow-Origin", "*");
-    var sqlQry = `INSERT INTO USUARIO (NOME, IDADE, FOTO, SEXO, ESCOLARIDADE, EMAIL, SENHA, TIPO) 
-    VALUES ('${NOME}','${IDADE}','${FOTO}','${SEXO}','${ESCOLARIDADE}','${EMAIL}','${SENHA}','${TIPO}')`;
+    var sqlQry = `INSERT INTO USUARIO (NOME, IDADE, SEXO, ESCOLARIDADE, EMAIL, SENHA, TIPO) 
+    VALUES ('${NOME}','${IDADE}','${SEXO}','${ESCOLARIDADE}','${EMAIL}','${SENHA}','${TIPO}')`;
 
     execute.executeSQL(sqlQry, function (results) {
 

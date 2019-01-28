@@ -6,7 +6,7 @@ const execute = require('../executeSQL');
 socket.on('connection', (io) => {
 
     io.on('ARCO', function (ID_ARCO) {
-        atualizarPontos(io,ID_ARCO)
+        atualizarPontos(io, ID_ARCO)
 
     })
 
@@ -82,8 +82,6 @@ socket.on('connection', (io) => {
         execute.executeSQL(sqlQry2, function (results) {
         });
 
-        console.log(MSG)
-
     })
 
     io.on('FINALIZAR_MENBRO', function (MSG) {
@@ -98,28 +96,50 @@ socket.on('connection', (io) => {
         });
     })
 
+    io.on('POSTCOMENTARIO', function (MSG) {
+        var sqlQry = `INSERT INTO COMENTARIO (ID_USUARIO, TEXTO, DATA, HORA, ID_ARCO) 
+        VALUES (${MSG.ID_USUARIO},'${MSG.TEXTO}','${MSG.DATA}','${MSG.HORA}','${MSG.ID_ARCO}')`;
+        execute.executeSQL(sqlQry, function (results) {
+
+            console.log(results)
+        });
+
+        console.log(MSG)
+    })
+
+
+    io.on('COMENTARIO', function (ID_ARCO) {
+        var sqlQry = `SELECT u.ID, u.EMAIL, c.TEXTO, c.DATA, c.HORA FROM COMENTARIO AS c INNER JOIN USUARIO AS u ON c.ID_USUARIO = u.ID`;
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                io.emit('COMENTARIO' + ID_ARCO, results);
+                io.broadcast.emit('COMENTARIO' + ID_ARCO, results);
+            }
+        });
+    })
+
 });
 
-function atualizarPontos(io,ID_ARCO) {
+function atualizarPontos(io, ID_ARCO) {
     var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ETAPA WHERE ID_ARCO = ${ID_ARCO};`;
     execute.executeSQL(sqlQry, function (results) {
         execute.executeSQL(`UPDATE ARCO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_ARCO}`, function (results) {
-            atualizarCurtidas(io,ID_ARCO)
+            atualizarCurtidas(io, ID_ARCO)
         });
     });
 }
 
-function atualizarCurtidas(io,ID_ARCO) {
+function atualizarCurtidas(io, ID_ARCO) {
     var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO} AND i.TIPO = 1;`;
     execute.executeSQL(sqlQry, function (results) {
         execute.executeSQL(`UPDATE ARCO SET GOSTEI = '${results[0]['COUNT(*)']}' WHERE ID = ${ID_ARCO}`, function (results) {
-            atualizarDenuncias(io,ID_ARCO)
+            atualizarDenuncias(io, ID_ARCO)
 
         });
     });
 }
 
-function atualizarDenuncias(io,ID_ARCO) {
+function atualizarDenuncias(io, ID_ARCO) {
     var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO} AND i.TIPO = 2;`;
     execute.executeSQL(sqlQry, function (results) {
         execute.executeSQL(`UPDATE ARCO SET DENUNCIA = '${results[0]['COUNT(*)']}' WHERE ID = ${ID_ARCO}`, function (results) {
