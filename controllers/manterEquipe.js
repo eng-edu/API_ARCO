@@ -11,7 +11,7 @@ exports.buscar = ('/buscar/:ID', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
+       
     });
 
 })
@@ -32,7 +32,7 @@ exports.inserir = ('/inserir/:ID_USUARIO/:ID_ARCO/:NOME', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results);
+       
     });
 
 });
@@ -45,7 +45,7 @@ exports.listar = ('/listar', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
+       
     });
 
 })

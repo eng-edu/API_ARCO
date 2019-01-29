@@ -11,7 +11,7 @@ exports.buscar = ('/buscar/:ID_ARCO/:ID_USUARIO', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
+       
     });
 
 })
@@ -35,7 +35,7 @@ exports.inserir = ('/inserir/:CODIGO/:TITULO/:ID_ARCO/:TEXTO/:PONTO/:STATUS', (r
         } else {
             res.status(405).send(results);
         }
-        console.log(results);
+       
     });
 
 });
@@ -48,7 +48,7 @@ exports.listar = ('/listar', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
+       
     });
 
 })

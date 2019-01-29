@@ -11,7 +11,7 @@ exports.listar = ('/listar', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
+       
     });
 
 })

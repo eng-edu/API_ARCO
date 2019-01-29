@@ -12,24 +12,35 @@ exports.buscarUsuarioEmailSenha = ('/buscarUsuarioEmailSenha/:EMAIL/:SENHA', (re
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
     });
 })
 
 
 exports.buscar = ('/buscar/:ID', (req, res) => {
     var sqlQry = `SELECT * FROM USUARIO WHERE ID = '${req.params.ID}'`;
+  
+    atualizarPontosUser(req.params.ID)
+
     execute.executeSQL(sqlQry, function (results) {
 
         if (results.length > 0) {
             res.status(200).send(results[0])
+          
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
     });
 
 })
+
+
+function atualizarPontosUser(ID_USUARIO) {
+    var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ARCO AS a INNER JOIN EQUIPE AS E ON a.ID = e.ID_ARCO WHERE e.ID_USUARIO = ${ID_USUARIO} AND a.SITUACAO = 0;`;
+    execute.executeSQL(sqlQry, function (results) {
+        execute.executeSQL(`UPDATE USUARIO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_USUARIO}`, function (results) {
+        });
+    });
+}
 
 exports.inserir = ('/inserir/:NOME/:IDADE/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIPO', (req, res) => {
 
@@ -55,14 +66,14 @@ exports.inserir = ('/inserir/:NOME/:IDADE/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIP
 
             fs.rename(TEMP, CAMINHO, function (err) {
                 if (err) {
-                    console.log(err);
+    
                 }
             })
             res.status(200).send(results);
         } else {
             res.status(405).send(results);
         }
-        console.log(results);
+       
     });
 
 
@@ -89,15 +100,16 @@ exports.alterarComFoto = ('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE'
 
             fs.rename(TEMP, CAMINHO, function (err) {
                 if (err) {
-                    console.log(err);
+                  
                 }
             })
 
             res.status(200).send(results);
+            atualizarPontosUser(req.params.ID)
         } else {
             res.status(405).send(results);
         }
-        console.log(results);
+      
     });
 
 
@@ -119,10 +131,11 @@ exports.alterar = ('/alterar/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE', (req, res) =
 
         if (results['affectedRows'] > 0) {
             res.status(200).send(results);
+            atualizarPontosUser(req.params.ID)
         } else {
             res.status(405).send(results);
         }
-        console.log(results);
+       
     });
 
 
@@ -143,10 +156,15 @@ WHERE
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             res.status(200).send(results)
+
+            results.forEach(element => {
+                atualizarPontosUser(element.ID)
+            });
+
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
+        
 
 
     });
@@ -164,7 +182,7 @@ exports.novoMenbro = ('/novoMenbro/:ID_USUARIO/:ID_ARCO', (req, res) => {
         } else {
             res.status(405).send(results);
         }
-        console.log(results)
+       
     });
 
 

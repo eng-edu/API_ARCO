@@ -56,6 +56,11 @@ socket.on('connection', (io) => {
         var sqlQry = `SELECT u.ID, u.NOME, u.EMAIL FROM EQUIPE AS e INNER JOIN USUARIO as u ON u.ID = e.ID_USUARIO WHERE u.TIPO = 2 AND ID_ARCO = ${ID_ARCO} GROUP BY e.ID_USUARIO;`;
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
+
+                results.forEach(element => {
+                    atualizarPontosUser(element.ID)
+                });
+
                 io.emit(msg, results);
                 io.broadcast.emit(msg, results);
             }
@@ -125,6 +130,17 @@ function atualizarPontos(io, ID_ARCO) {
     execute.executeSQL(sqlQry, function (results) {
         execute.executeSQL(`UPDATE ARCO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_ARCO}`, function (results) {
             atualizarCurtidas(io, ID_ARCO)
+        });
+    });
+}
+
+
+
+
+function atualizarPontosUser(ID_USUARIO) {
+    var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ARCO AS a INNER JOIN EQUIPE AS E ON a.ID = e.ID_ARCO WHERE e.ID_USUARIO = ${ID_USUARIO} AND a.SITUACAO = 0;`;
+    execute.executeSQL(sqlQry, function (results) {
+        execute.executeSQL(`UPDATE USUARIO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_USUARIO}`, function (results) {
         });
     });
 }
@@ -311,7 +327,7 @@ exports.buscarArcosComaprtilhados = ('/buscarArcosComaprtilhados', (req, res) =>
 })
 
 exports.buscarRanking = ('/buscarRanking', (req, res) => {
-    var sqlQry = `SELECT * FROM USUARIO ORDER BY PONTO DESC LIMIT 10`;
+    var sqlQry = `SELECT * FROM USUARIO WHERE TIPO = 2 ORDER BY PONTO DESC LIMIT 10 `;
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             res.status(200).send(results)
