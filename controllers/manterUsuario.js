@@ -10,7 +10,7 @@ exports.buscarUsuarioEmailSenha = ('/buscarUsuarioEmailSenha/:EMAIL/:SENHA', (re
         if (results.length > 0) {
             res.status(200).send(results[0])
         } else {
-            res.status(405).send(results);
+            res.status(203).send('dados incorretos!');
         }
     });
 })
@@ -37,7 +37,7 @@ exports.buscar = ('/buscar/:ID', (req, res) => {
 function atualizarPontosUser(ID_USUARIO) {
     var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ARCO AS a INNER JOIN EQUIPE AS E ON a.ID = e.ID_ARCO WHERE e.ID_USUARIO = ${ID_USUARIO} AND a.SITUACAO = 0;`;
     execute.executeSQL(sqlQry, function (results) {
-        execute.executeSQL(`UPDATE USUARIO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_USUARIO}`, function (results) {
+        execute.executeSQL(`UPDATE USUARIO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_USUARIO} AND TIPO = 2`, function (results) {
         });
     });
 }
