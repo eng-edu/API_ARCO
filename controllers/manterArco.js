@@ -358,7 +358,14 @@ exports.gerarmedia = ('/gerarmedia/:list', (req, res) => {
     
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-                res.status(200).send(results[0])
+               
+                var total = (results[0].PONTO * 100)
+                total = total / 25 
+                total = total / json.length
+
+            
+                res.status(200).send(total+'')
+
             } else {
                 res.status(405).send(results);
             }
