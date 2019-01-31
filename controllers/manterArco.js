@@ -123,6 +123,8 @@ socket.on('connection', (io) => {
         });
     })
 
+
+
 });
 
 function atualizarPontos(io, ID_ARCO) {
@@ -336,4 +338,32 @@ exports.buscarRanking = ('/buscarRanking', (req, res) => {
         }
     });
 
+
+})
+
+exports.gerarmedia = ('/gerarmedia/:list', (req, res) => {
+    
+    var json = JSON.parse(req.params.list)
+    
+    var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ARCO WHERE`;
+
+    if(json.length>0){
+        for(var i = 0; i < json.length; i++){
+            if(i < json.length - 1 ){
+                sqlQry = sqlQry + ` ID = ${json[i]} OR`
+            }else{
+                sqlQry = sqlQry + ` ID = ${json[i]};`
+            }
+        }
+    
+        execute.executeSQL(sqlQry, function (results) {
+            if (results.length > 0) {
+                res.status(200).send(results[0])
+            } else {
+                res.status(405).send(results);
+            }
+        });
+    }
+
+   
 })
