@@ -54,8 +54,8 @@ exports.inserir = ('/inserir/:NOME/:IDADE/:SEXO/:ESCOLARIDADE/:EMAIL/:SENHA/:TIP
 
     var fs = require('fs');
     res.setHeader("Access-Control-Allow-Origin", "*");
-    var sqlQry = `INSERT INTO USUARIO (NOME, IDADE, SEXO, ESCOLARIDADE, EMAIL, SENHA, TIPO) 
-    VALUES ('${NOME}','${IDADE}','${SEXO}','${ESCOLARIDADE}','${EMAIL}','${SENHA}','${TIPO}')`;
+    var sqlQry = `INSERT INTO USUARIO (NOME, IDADE, SEXO, ESCOLARIDADE, EMAIL, SENHA, TIPO, PONTO) 
+    VALUES ('${NOME}','${IDADE}','${SEXO}','${ESCOLARIDADE}','${EMAIL}','${SENHA}','${TIPO}', 0)`;
 
     execute.executeSQL(sqlQry, function (results) {
 
