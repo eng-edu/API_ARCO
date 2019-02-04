@@ -114,7 +114,7 @@ socket.on('connection', (io) => {
 
 
     io.on('COMENTARIO', function (ID_ARCO) {
-        var sqlQry = `SELECT u.ID, u.EMAIL, c.TEXTO, c.DATA, c.HORA FROM COMENTARIO AS c INNER JOIN USUARIO AS u ON c.ID_USUARIO = u.ID`;
+        var sqlQry = `SELECT u.ID, u.EMAIL, c.TEXTO, c.DATA, c.HORA FROM COMENTARIO AS c INNER JOIN USUARIO AS u ON c.ID_USUARIO = u.ID  WHERE c.ID_ARCO = ${ID_ARCO}`;
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
                 io.emit('COMENTARIO' + ID_ARCO, results);
