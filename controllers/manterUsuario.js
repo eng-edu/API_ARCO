@@ -27,30 +27,37 @@ exports.cadastrarUser = ('/cadastrar/:BIO/:NOME/:SOBRENOME/:CPF/:SEXO/:DATA_NASC
     const SENHA = req.params.SENHA;
     const TIPO = req.params.TIPO
 
-    var fs = require('fs');
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    var sqlQry = `INSERT INTO USUARIO (BIO, NOME, SOBRENOME, CPF, SEXO, DATA_NASC, ESCOLARIDADE, EMAIL, SENHA, TIPO) 
+    var sqlQry1 = `SELECT * FROM USUARIO WHERE EMAIL = '${EMAIL}'`;
+    execute.executeSQL(sqlQry1, function (results) {
+        if (results.length > 0) {
+            res.status(201).send('Email já cadastrado, tente outro!');
+        } else {
+            var fs = require('fs');
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            var sqlQry = `INSERT INTO USUARIO (BIO, NOME, SOBRENOME, CPF, SEXO, DATA_NASC, ESCOLARIDADE, EMAIL, SENHA, TIPO) 
     VALUES ('${BIO}','${NOME}','${SOBRENOME}','${CPF}','${SEXO}','${DATA_NASC}','${ESCOLARIDADE}','${EMAIL}','${SENHA}','${TIPO}')`;
 
-    execute.executeSQL(sqlQry, function (results) {
+            execute.executeSQL(sqlQry, function (results) {
 
-        if (results['insertId'] > 0) {
+                if (results['insertId'] > 0) {
 
-            var CAMINHO = './uploads/' + results['insertId'] + "_usuario.jpg"
-            var TEMP = req.files.file.path;
+                    var CAMINHO = './uploads/' + results['insertId'] + "_usuario.jpg"
+                    var TEMP = req.files.file.path;
 
-            fs.rename(TEMP, CAMINHO, function (err) {
-                if (err) {
-                    res.status(203).send(err);
+                    fs.rename(TEMP, CAMINHO, function (err) {
+                        if (err) {
+                            res.status(203).send(err);
+                        }
+                    })
+                    res.status(200).send(results);
+                } else {
+                    res.status(203).send(results);
                 }
-            })
-            res.status(200).send(results);
-        } else {
-            res.status(203).send(results);
+
+            });
+
         }
-
     });
-
 });
 
 exports.alterarComFoto = ('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE', (req, res) => {
@@ -88,3 +95,4 @@ exports.alterarComFoto = ('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE'
 
 
 });
+
