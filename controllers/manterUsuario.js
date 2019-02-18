@@ -2,7 +2,7 @@
 
 const execute = require('../executeSQL');
 
-exports.logarUser = ('/buscarUsuarioEmailSenha/:EMAIL/:SENHA', (req, res) => {
+exports.logarUser = ('/logar/:EMAIL/:SENHA', (req, res) => {
     var sqlQry = `SELECT * FROM USUARIO WHERE EMAIL = '${req.params.EMAIL}' AND SENHA = '${req.params.SENHA}'`;
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
