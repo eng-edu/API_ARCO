@@ -12,8 +12,27 @@ exports.logarUser = ('/logar/:EMAIL/:SENHA', (req, res) => {
         }
     });
 })
+exports.recuperarSenha = ('/recuperarSenha/:EMAIL/:DATA_NASC', (req, res) => {
+    
+    const EMAIL = req.params.EMAIL;
+    var sqlQry = `SELECT * FROM USUARIO WHERE EMAIL = '${EMAIL}' AND DATA_NASC = '${req.params.DATA_NASC}'`;
+    
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
 
+            var randomstring = Math.random().toString(36).slice(-10);
+            console.log(randomstring)
 
+            var sqlQry = `UPDATE USUARIO SET SENHA = '${randomstring}' WHERE EMAIL = '${EMAIL}'`;
+            execute.executeSQL(sqlQry, function (results) {
+                  enviarEmail(EMAIL, randomstring, res)
+            });
+
+        } else {
+            res.status(203).send('dados incorretos!');
+        }
+    });
+})
 exports.cadastrarUser = ('/cadastrar/:BIO/:NOME/:SOBRENOME/:CPF/:SEXO/:DATA_NASC/:ESCOLARIDADE/:EMAIL/:SENHA/:TIPO', (req, res) => {
 
     const BIO = req.params.BIO;
@@ -59,7 +78,6 @@ exports.cadastrarUser = ('/cadastrar/:BIO/:NOME/:SOBRENOME/:CPF/:SEXO/:DATA_NASC
         }
     });
 });
-
 exports.alterarComFoto = ('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE', (req, res) => {
 
     const ID = req.params.ID
@@ -96,3 +114,35 @@ exports.alterarComFoto = ('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE'
 
 });
 
+function enviarEmail(destinatario, novasenha, res){
+
+    var nodemailer = require('nodemailer');
+
+    var usuario = 'eduardo.eng15@hotmail.com';
+    var senha = '6code384'; 
+    
+    var transporter = nodemailer.createTransport({
+        service: 'hotmail',
+        auth: {
+            user: usuario,
+            pass: senha
+        }
+    });
+    
+    var mailOptions = {
+        from: usuario,
+        to: destinatario,
+        subject: 'Recuperaração de senha',
+        text: 'Sua nova senha é: '+ novasenha
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+            res.send(203).send('error')
+        } else {
+            console.log('Email enviado: ' + info.response);
+            res.status(200).send('email enviado com sucesso!')
+        }
+    });
+}
