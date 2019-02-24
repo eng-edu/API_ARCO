@@ -78,6 +78,18 @@ exports.cadastrarUser = ('/cadastrar/:BIO/:NOME/:SOBRENOME/:CPF/:SEXO/:DATA_NASC
         }
     });
 });
+
+exports.buscarUsuario = ('/buscarUsuario/:ID', (req, res) => {
+    var sqlQry = `SELECT * FROM USUARIO WHERE ID = '${req.params.ID}'`;
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            res.status(200).send(results[0])
+        } else {
+            res.status(203).send('Usuario não encontrado!');
+        }
+    });
+})
+
 exports.alterarComFoto = ('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE', (req, res) => {
 
     const ID = req.params.ID
