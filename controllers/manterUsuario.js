@@ -90,17 +90,21 @@ exports.buscarUsuario = ('/buscarUsuario/:ID', (req, res) => {
     });
 })
 
-exports.alterarComFoto = ('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE', (req, res) => {
+exports.alterarComFoto = ('/alterarComFoto/:ID/:BIO/:NOME/:SOBRENOME/:CPF/:SEXO/:DATA_NASC/:ESCOLARIDADE/', (req, res) => {
 
     const ID = req.params.ID
+    const BIO = req.params.BIO
     const NOME = req.params.NOME;
-    const IDADE = req.params.IDADE;
+    const SOBRENOME = req.params.SOBRENOME;
+    const CPF = req.params.CPF
     const SEXO = req.params.SEXO;
+    const DATA_NASC = req.params.DATA_NASC
     const ESCOLARIDADE = req.params.ESCOLARIDADE;
 
     var fs = require('fs');
     res.setHeader("Access-Control-Allow-Origin", "*");
-    var sqlQry = `UPDATE USUARIO SET NOME = '${NOME}', IDADE = '${IDADE}', SEXO = '${SEXO}' , ESCOLARIDADE = '${ESCOLARIDADE}' WHERE ID = ${ID}`;
+    var sqlQry = `UPDATE USUARIO 
+    SET BIO = '${BIO}', NOME = '${NOME}', SOBRENOME = '${SOBRENOME}', CPF = '${CPF}', SEXO = '${SEXO}', DATA_NASC = '${DATA_NASC}', ESCOLARIDADE = '${ESCOLARIDADE}' WHERE ID = ${ID}`;
 
     execute.executeSQL(sqlQry, function (results) {
 
@@ -111,12 +115,10 @@ exports.alterarComFoto = ('/alterarComFoto/:ID/:NOME/:IDADE/:SEXO/:ESCOLARIDADE'
 
             fs.rename(TEMP, CAMINHO, function (err) {
                 if (err) {
-
+                    res.status(405).send(results);
                 }
             })
-
             res.status(200).send(results);
-            atualizarPontosUser(req.params.ID)
         } else {
             res.status(405).send(results);
         }
