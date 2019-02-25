@@ -4,13 +4,15 @@ const express = require('express');
 const app = express();
 const mysql = require('mysql');
 
+
 //configura conexao com banco
 exports.connection = mysql.createConnection({
   host: 'localhost',
   port: '3306',
   user: 'root',
   password: '6code384',
-  database: 'BD'
+  database: 'BD',
+  charset: 'latin1_swedish_ci'
 });
 
 //ver imagem
@@ -39,6 +41,9 @@ app.get('/PDF/:NAME', function (req, res) {
 //carregando rotas
 app.use('/index', require('./routes/index'));
 app.use('/usuario', require('./routes/routerUsuario'))
+app.use('/escolaridade', require('./routes/routerEscolaridade'))
+
+
 app.use('/tematica', require('./routes/routerTematica'))
 app.use('/arco', require('./routes/routerArco'))
 app.use('/etapa', require('./routes/routerEtapa'))
