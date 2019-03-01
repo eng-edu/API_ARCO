@@ -26,12 +26,12 @@ exports.alterarComFoto = ('/alterarComFoto/:ID_USUARIO/:INSTITUICAO/:AREA/:ANO/:
     var fs = require('fs');
     res.setHeader("Access-Control-Allow-Origin", "*");
     var sqlQry = `UPDATE ESCOLARIDADE 
-    SET INSTITUICAO = '${INSTITUICAO}', AREA = '${AREA}', ANO = '${ANO}', GRUPOS = '${GRUPOS}', DESCRICAO = '${DESCRICAO}' WHERE ID = ${ID_USUARIO}`;
+    SET INSTITUICAO = '${INSTITUICAO}', AREA = '${AREA}', ANO = '${ANO}', GRUPOS = '${GRUPOS}', DESCRICAO = '${DESCRICAO}' WHERE ID_USUARIO = ${ID_USUARIO}`;
     execute.executeSQL(sqlQry, function (results) {
 
         if (results['affectedRows'] > 0) {
 
-            var CAMINHO = './uploads/' + ID + "_usuario.jpg"
+            var CAMINHO = './uploads/' + ID_USUARIO + "_escolaridade.jpg"
             var TEMP = req.files.file.path;
 
             fs.rename(TEMP, CAMINHO, function (err) {
@@ -58,9 +58,9 @@ exports.alterar = ('/alterar/:ID_USUARIO/:INSTITUICAO/:AREA/:ANO/:GRUPOS/:DESCRI
     const GRUPOS = req.params.GRUPOS;
     const DESCRICAO = req.params.DESCRICAO;
 
-    var sqlQry1 = `SELECT * FROM ESCOLARIDADE WHERE ID = ${ID_USUARIO}`;
+    var sqlQry1 = `SELECT * FROM ESCOLARIDADE WHERE ID_USUARIO = ${ID_USUARIO}`;
 
-    var sqlQry2 = `INSERT INTO ESCOLARIDADE (INSTITUICAO, AREA, ANO, GRUPOS, DESCRICAO, ID_USUARIO) VALUES ('${INSTITUICAO}', '${AREA}', '${ANO}', '${GRUPOS}', '${DESCRICAO}', '${ID_USUARIO}'`;
+    var sqlQry2 = `INSERT INTO ESCOLARIDADE (INSTITUICAO, AREA, ANO, GRUPOS, DESCRICAO, ID_USUARIO) VALUES ('${INSTITUICAO}', '${AREA}', '${ANO}', '${GRUPOS}', '${DESCRICAO}', ${ID_USUARIO})`;
 
     var sqlQry3 = `UPDATE ESCOLARIDADE SET INSTITUICAO = '${INSTITUICAO}', AREA = '${AREA}', ANO = '${ANO}', GRUPOS = '${GRUPOS}', DESCRICAO = '${DESCRICAO}' WHERE ID_USUARIO = ${ID_USUARIO}`;
 
