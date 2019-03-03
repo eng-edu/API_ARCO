@@ -247,42 +247,47 @@ exports.inserir = ('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:GOSTEI/:DENU
 
 });
 
-exports.novoArco = ('/novoArco/:ID_TEMATICA/:ID_LIDER', (req, res) => {
+exports.novoArco = ('/novoArco/:ID_LIDER/:ID_TEMATICA', (req, res) => {
 
-    const ID_TEMATICA = req.params.ID_TEMATICA;
     const ID_LIDER = req.params.ID_LIDER;
+    const ID_TEMATICA = req.params.ID_TEMATICA;
+    var DATA_HORA = require('./util').dataAtual();
 
-    var sqlQry1 = `INSERT INTO ARCO (ID_TEMATICA, TITULO, ID_LIDER, PONTO, GOSTEI, DENUNCIA, SITUACAO) 
-    VALUES (${ID_TEMATICA},'Defina um título!',${ID_LIDER},'0','0','0','0')`;
+
+    //STATUS 1 = EM DESENVOLVIMENTO
+    //STATUS 2 = FINALIZADO
+    var sqlQry1 = `INSERT INTO ARCO (ID_TEMATICA, ID_LIDER, DATA_HORA, STATUS) 
+    VALUES (${ID_TEMATICA},${ID_LIDER},'${DATA_HORA}',1)`;
 
     execute.executeSQL(sqlQry1, function (results) {
 
         if (results['insertId'] > 0) {
-            res.status(200).json(results.insertId);
-            inserirEquipe(results['insertId'], ID_LIDER)
+            inserirEtapas(results['insertId'],  res);
         } else {
-            res.status(405).send(results);
+            res.status(203).send(results);
         }
     });
 });
 
-function inserirEquipe(ID_ARCO, ID_LIDER) {
-    var sqlQry2 = `INSERT INTO EQUIPE (ID_USUARIO, ID_ARCO) VALUES (${ID_LIDER},${ID_ARCO})`;
-    execute.executeSQL(sqlQry2, function (results) {
-        inserirEtapas(ID_ARCO)
-    });
-}
+function inserirEtapas(ID_ARCO, res) {
+    
+    //STATUS 1 = EM DESENVOLVIMENTO
+    //STATUS 2 = FINALIZADO
 
-function inserirEtapas(ID_ARCO) {
-
-    var sqlQry2 = `INSERT INTO ETAPA (CODIGO, TITULO, ID_ARCO, TEXTO, PONTO, SITUACAO) VALUES 
-    ('1','OBSERVAÇÃO DA REALIDADE',${ID_ARCO},'Desenvolva sua idéia aqui...','0','1'),
-    ('2','PONTOS CHAVES',${ID_ARCO},'Desenvolva sua idéia aqui...','0','0'),
-    ('3','TEORIZAÇÃO',${ID_ARCO},'Desenvolva sua idéia aqui...','0','0'),
-    ('4','HIPÓTESES DE SOLUÇÃO',${ID_ARCO},'Desenvolva sua idéia aqui...','0','0'),
-    ('5','APLICAÇÃO A REALIDADE',${ID_ARCO},'Desenvolva sua idéia aqui...','0','0')`;
+    var sqlQry2 = `INSERT INTO ETAPA (ID_ARCO, NOME, DESCRICAO, STATUS, CODIGO) VALUES 
+    (${ID_ARCO},'OBSERVAÇÃO DA REALIDADE',' ----- ',1,1),
+    (${ID_ARCO},'PONTOS CHAVES',' ----- ',1,2),
+    (${ID_ARCO},'TEORIZAÇÃO',' ----- ',1,3),
+    (${ID_ARCO},'HIPÓTESES DE SOLUÇÃO',' ----- ',1,4),
+    (${ID_ARCO},'APLICAÇÃO A REALIDADE',' ----- ',1,5)`;
 
     execute.executeSQL(sqlQry2, function (results) {
+        if (results['insertId'] > 0) {
+            res.status(200).send(results);
+        } else {
+            res.status(203).send(results);
+        }
+
     });
 }
 
@@ -295,7 +300,6 @@ exports.listar = ('/listar', (req, res) => {
             res.status(405).send(results);
         }
     });
-
 })
 
 exports.denunciarArco = ('/denunciarArco/:ID_USUARIO/:ID_ARCO/:DESCRICAO', (req, res) => {
@@ -342,29 +346,29 @@ exports.buscarRanking = ('/buscarRanking', (req, res) => {
 })
 
 exports.gerarmedia = ('/gerarmedia/:list', (req, res) => {
-    
+
     var json = JSON.parse(req.params.list)
-    
+
     var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ARCO WHERE`;
 
-    if(json.length>0){
-        for(var i = 0; i < json.length; i++){
-            if(i < json.length - 1 ){
+    if (json.length > 0) {
+        for (var i = 0; i < json.length; i++) {
+            if (i < json.length - 1) {
                 sqlQry = sqlQry + ` ID = ${json[i]} OR`
-            }else{
+            } else {
                 sqlQry = sqlQry + ` ID = ${json[i]};`
             }
         }
-    
+
         execute.executeSQL(sqlQry, function (results) {
             if (results.length > 0) {
-               
+
                 var total = (results[0].PONTO * 100)
-                total = total / 25 
+                total = total / 25
                 total = total / json.length
 
-            
-                res.status(200).send(total+'')
+
+                res.status(200).send(total + '')
 
             } else {
                 res.status(405).send(results);
@@ -372,5 +376,5 @@ exports.gerarmedia = ('/gerarmedia/:list', (req, res) => {
         });
     }
 
-   
+
 })
