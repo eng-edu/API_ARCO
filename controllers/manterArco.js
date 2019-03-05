@@ -38,7 +38,23 @@ FROM
 
 function buscarEtapa(io, ID_ARCO) {
     var msg = 'ETAPA' + ID_ARCO;
-    var sqlQry = `SELECT e.ID, e.STATUS, e.CODIGO FROM ETAPA AS e INNER JOIN TEMATICA AS t ON t.ID =  WHERE ID_ARCO = ${ID_ARCO}`;
+    var sqlQry = `SELECT 
+    e.ID,
+    e.NOME AS NOME_ETAPA,
+    e.SITUACAO AS SITUACAO_ETAPA,
+    e.CODIGO AS CODIGO_ETAPA,
+    e.DESCRICAO AS DESCRICAO_ETAPA,
+    t.NOME AS NOME_TEMATICA,
+    t.DESCRICAO AS DESCRICAO_TEMATICA
+FROM
+    ETAPA AS e
+        INNER JOIN
+    ARCO AS a ON e.ID_ARCO = a.ID
+        INNER JOIN
+    TEMATICA AS t ON a.ID_TEMATICA = t.ID
+WHERE
+    a.ID = ${ID_ARCO};`;
+    
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             io.emit(msg, results);
