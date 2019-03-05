@@ -203,21 +203,24 @@ exports.buscar = ('/buscar/:ID', (req, res) => {
 
 })
 
-exports.buscarMeusArcos = ('/buscar/:ID_USUARIO', (req, res) => {
-    var sqlQry = `SELECT a.ID, t.TITULO as TEMATICA, a.TITULO, a.PONTO, a.GOSTEI 
-    FROM ARCO as a 
-    inner join TEMATICA as t 
-    inner join EQUIPE as e
-	ON a.ID_TEMATICA = t.ID 
-    AND e.ID_ARCO = a.ID
-    AND e.ID_USUARIO = ${req.params.ID_USUARIO}
-    GROUP BY a.ID;`;
+exports.buscarMeusArcos = ('/buscarMeusArcos/:ID_USUARIO', (req, res) => {
+    
+    const ID_USUARIO = req.params.ID_USUARIO
+    
+    var sqlQry = `SELECT 
+    a.ID, a.STATUS, a.ID_LIDER, a.DATA_HORA, e.NOME AS NOME_EQUIPE, t.NOME AS NOME_TEMATICA, t.DESCRICAO AS DESCRICAO_TEMATICA
+FROM
+    ARCO AS a
+        INNER JOIN
+    TEMATICA AS t ON a.ID_TEMATICA = t.ID
+        INNER JOIN
+    EQUIPE AS e ON a.ID = e.ID_ARCO WHERE e.ID_USUARIO = ${ID_USUARIO} OR a.ID_LIDER = ${ID_USUARIO} GROUP BY a.ID`;
 
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             res.status(200).send(results)
         } else {
-            res.status(405).send(results);
+            res.status(203).send(results);
         }
     });
 

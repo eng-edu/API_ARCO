@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start ./server/server.js  --name api_arco",
+    "start": "nodemon ./server/server.js",
     "stop": "pm2 delete api_arco"
   },
   "keywords": [],

@@ -9,8 +9,11 @@ const multiparty = require('connect-multiparty');
 const manteArco = require('../controllers/manterArco')
 
 //rotas
-router.get('/buscar/:ID', manteArco.buscar)
 router.get('/buscarMeusArcos/:ID_USUARIO', manteArco.buscarMeusArcos)
+
+
+
+router.get('/buscar/:ID', manteArco.buscar)
 router.post('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:GOSTEI/:DENUNCIA/:STATUS', manteArco.inserir)
 router.post('/novoArco/:ID_LIDER/:ID_TEMATICA', manteArco.novoArco)
 router.post('/denunciarArco/:ID_USUARIO/:ID_ARCO/:DESCRICAO', manteArco.denunciarArco)
