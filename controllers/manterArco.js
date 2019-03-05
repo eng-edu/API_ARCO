@@ -4,184 +4,30 @@ const socket = require('../server/serverSocket');
 const execute = require('../executeSQL');
 
 socket.on('connection', (io) => {
-
     io.on('ARCO', function (ID_ARCO) {
-        atualizarPontos(io, ID_ARCO)
-
-    })
-
-    io.on('TITULO', function (MSG) {
-        var sqlQry = `UPDATE ARCO SET TITULO = '${MSG.TITULO}' WHERE ID = ${MSG.ID_ARCO};`;
-        execute.executeSQL(sqlQry, function (results) {
-        });
-    })
-
-    io.on('EU_GOSTEI', function (MSG) {
-        var sqlQry = `SELECT COUNT(*) AS EU_CURTI FROM
-        ARCO AS a
-            INNER JOIN
-        INFO_ARCO AS i ON a.ID = i.ID_ARCO WHERE a.ID = ${MSG.ID_ARCO} AND i.ID_USUARIO = ${MSG.ID_USUARIO};`;
-
-        var msg = "EU_GOSTEI" + MSG.ID_USUARIO
-
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-                io.emit(msg, results[0]);
-                io.broadcast.emit(msg, results[0]);
-            }
-        });
-
-    })
-
-    io.on('GOSTEI', function (MSG) {
-        var sqlQry = `INSERT INTO INFO_ARCO (ID_USUARIO, ID_ARCO, TIPO) 
-            VALUES ('${MSG.ID_USUARIO}','${MSG.ID_ARCO}','1');`;
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-
-            }
-        });
-    })
-
-    io.on('NGOSTEI', function (MSG) {
-        var sqlQry = `DELETE FROM INFO_ARCO WHERE ID_USUARIO = ${MSG.ID_USUARIO} AND ID_ARCO = ${MSG.ID_ARCO};`;
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-            }
-        });
-    })
-
-    io.on('EQUIPE', function (ID_ARCO) {
-        var msg = 'EQUIPE' + ID_ARCO;
-        var sqlQry = `SELECT u.ID, u.NOME, u.EMAIL FROM EQUIPE AS e INNER JOIN USUARIO as u ON u.ID = e.ID_USUARIO WHERE u.TIPO = 2 AND ID_ARCO = ${ID_ARCO} GROUP BY e.ID_USUARIO;`;
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-
-                results.forEach(element => {
-                    atualizarPontosUser(element.ID)
-                });
-
-                io.emit(msg, results);
-                io.broadcast.emit(msg, results);
-            }
-        });
+        buscarArco(io,ID_ARCO)
     })
 
     io.on('ETAPA', function (ID_ARCO) {
-        var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${ID_ARCO};`;
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-                io.emit("ETAPA" + ID_ARCO, results);
-                io.broadcast.emit("ETAPA" + ID_ARCO, results);
-            }
-        });
+        buscarEtapa(io,ID_ARCO)
     })
 
-    io.on('FINALIZAR_LIDER', function (MSG) {
-        var sqlQry1 = `UPDATE ETAPA SET PONTO = '${MSG.PONTO}', SITUACAO = 3 WHERE CODIGO = ${MSG.CODIGO} AND ID_ARCO = ${MSG.ID_ARCO};`;
-        execute.executeSQL(sqlQry1, function (results) {
-        });
-        var prox = parseInt(MSG.CODIGO);
-        prox = prox + 1
-        var sqlQry2 = `UPDATE ETAPA SET SITUACAO = 1 WHERE CODIGO = ${prox} AND ID_ARCO = ${MSG.ID_ARCO};`;
-        execute.executeSQL(sqlQry2, function (results) {
-        });
-
+    io.on('OPINIAO', function (ID_ARCO) {
+        buscarOpiniao(io,ID_ARCO)
     })
-
-    io.on('FINALIZAR_MENBRO', function (MSG) {
-        var sqlQry = `UPDATE ETAPA SET TEXTO = '${MSG.TEXTO}', SITUACAO = 2 WHERE CODIGO = ${MSG.CODIGO} AND ID_ARCO = ${MSG.ID_ARCO};`;
-        execute.executeSQL(sqlQry, function (results) {
-        });
-    })
-
-    io.on('SALVAR', function (MSG) {
-        var sqlQry = `UPDATE ETAPA SET TEXTO = '${MSG.TEXTO}' WHERE CODIGO = '${MSG.CODIGO}' AND ID_ARCO = ${MSG.ID_ARCO};`;
-        execute.executeSQL(sqlQry, function (results) {
-        });
-    })
-
-    io.on('POSTCOMENTARIO', function (MSG) {
-        var sqlQry = `INSERT INTO COMENTARIO (ID_USUARIO, TEXTO, DATA, HORA, ID_ARCO) 
-        VALUES (${MSG.ID_USUARIO},'${MSG.TEXTO}','${MSG.DATA}','${MSG.HORA}','${MSG.ID_ARCO}')`;
-        execute.executeSQL(sqlQry, function (results) {
-
-            console.log(results)
-        });
-
-        console.log(MSG)
-    })
-
-
-    io.on('COMENTARIO', function (ID_ARCO) {
-        var sqlQry = `SELECT u.ID, u.EMAIL, c.TEXTO, c.DATA, c.HORA FROM COMENTARIO AS c INNER JOIN USUARIO AS u ON c.ID_USUARIO = u.ID  WHERE c.ID_ARCO = ${ID_ARCO}`;
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-                io.emit('COMENTARIO' + ID_ARCO, results);
-                io.broadcast.emit('COMENTARIO' + ID_ARCO, results);
-            }
-        });
-    })
-
-
 
 });
 
-function atualizarPontos(io, ID_ARCO) {
-    var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ETAPA WHERE ID_ARCO = ${ID_ARCO};`;
-    execute.executeSQL(sqlQry, function (results) {
-        execute.executeSQL(`UPDATE ARCO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_ARCO}`, function (results) {
-            atualizarCurtidas(io, ID_ARCO)
-        });
-    });
-}
-
-
-
-
-function atualizarPontosUser(ID_USUARIO) {
-    var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ARCO AS a INNER JOIN EQUIPE AS e ON a.ID = e.ID_ARCO WHERE e.ID_USUARIO = ${ID_USUARIO} AND a.SITUACAO = 0;`;
-    execute.executeSQL(sqlQry, function (results) {
-        execute.executeSQL(`UPDATE USUARIO SET PONTO = '${results[0]['PONTO']}' WHERE ID = ${ID_USUARIO} AND TIPO = 2`, function (results) {
-        });
-    });
-}
-
-function atualizarCurtidas(io, ID_ARCO) {
-    var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO} AND i.TIPO = 1;`;
-    execute.executeSQL(sqlQry, function (results) {
-        execute.executeSQL(`UPDATE ARCO SET GOSTEI = '${results[0]['COUNT(*)']}' WHERE ID = ${ID_ARCO}`, function (results) {
-            atualizarDenuncias(io, ID_ARCO)
-
-        });
-    });
-}
-
-function atualizarDenuncias(io, ID_ARCO) {
-    var sqlQry = `SELECT COUNT(*) FROM INFO_ARCO as i inner join ARCO a ON i.ID_ARCO = a.ID WHERE a.ID = ${ID_ARCO} AND i.TIPO = 2;`;
-    execute.executeSQL(sqlQry, function (results) {
-        execute.executeSQL(`UPDATE ARCO SET DENUNCIA = '${results[0]['COUNT(*)']}' WHERE ID = ${ID_ARCO}`, function (results) {
-            buscarArco(io, ID_ARCO)
-        });
-    });
-}
-
-function buscarArco(io, ARCO_ID) {
-    var msg = 'ARCO' + ARCO_ID;
+function buscarArco(io, ID) {
+    var msg = 'ARCO' + ID;
     var sqlQry = `SELECT 
-    a.ID,
-    a.TITULO AS TITULO_ARCO,
-    a.ID_LIDER,
-    a.PONTO,
-    a.GOSTEI,
-    a.DENUNCIA,
-    a.SITUACAO,
-    a.ID_TEMATICA,
-    t.TITULO AS TITULO_TEMATICA,
-    t.DESCRICAO
-    FROM ARCO as a 
-    inner join TEMATICA as t 
-    WHERE a.ID_TEMATICA = t.ID AND a.ID = ${ARCO_ID}`;
+    a.ID, a.STATUS, a.ID_LIDER, a.DATA_HORA, e.NOME AS NOME_EQUIPE, t.NOME AS NOME_TEMATICA, t.DESCRICAO AS DESCRICAO_TEMATICA
+FROM
+    ARCO AS a
+        INNER JOIN
+    TEMATICA AS t ON a.ID_TEMATICA = t.ID
+        INNER JOIN
+    EQUIPE AS e ON a.ID = e.ID_ARCO WHERE a.ID = ${ID}`;
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             io.emit(msg, results[0]);
@@ -190,25 +36,34 @@ function buscarArco(io, ARCO_ID) {
     });
 }
 
-exports.buscar = ('/buscar/:ID', (req, res) => {
-    var sqlQry = `SELECT * FROM ARCO WHERE ID = '${req.params.ID}'`;
+function buscarEtapa(io, ID_ARCO) {
+    var msg = 'ETAPA' + ID_ARCO;
+    var sqlQry = `SELECT e.ID, e.STATUS, e.CODIGO FROM ETAPA AS e INNER JOIN TEMATICA AS t ON t.ID =  WHERE ID_ARCO = ${ID_ARCO}`;
     execute.executeSQL(sqlQry, function (results) {
-
         if (results.length > 0) {
-            res.status(200).send(results)
-        } else {
-            res.status(405).send(results);
+            io.emit(msg, results);
+            io.broadcast.emit(msg, results);
         }
     });
+}
 
-})
+function buscarOpiniao(io, ID_ARCO) {
+    var msg = 'ETAPA' + ID_ARCO;
+    var sqlQry = `SELECT ID, STATUS, CODIGO FROM ETAPA WHERE ID_ARCO = ${ID_ARCO}`;
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            io.emit(msg, results);
+            io.broadcast.emit(msg, results);
+        }
+    });
+}
 
 exports.buscarMeusArcos = ('/buscarMeusArcos/:ID_USUARIO', (req, res) => {
     
     const ID_USUARIO = req.params.ID_USUARIO
     
     var sqlQry = `SELECT 
-    a.ID, a.STATUS, a.ID_LIDER, a.DATA_HORA, e.NOME AS NOME_EQUIPE, t.NOME AS NOME_TEMATICA, t.DESCRICAO AS DESCRICAO_TEMATICA
+    a.ID, a.SITUACAO, a.ID_LIDER, a.DATA_HORA, e.NOME AS NOME_EQUIPE, t.NOME AS NOME_TEMATICA, t.DESCRICAO AS DESCRICAO_TEMATICA
 FROM
     ARCO AS a
         INNER JOIN
@@ -225,31 +80,6 @@ FROM
     });
 
 })
-
-exports.inserir = ('/inserir/:ID_TEMATICA/:TITULO/:ID_LIDER/:PONTO/:GOSTEI/:DENUNCIA/:STATUS', (req, res) => {
-
-    const ID_TEMATICA = req.params.ID_TEMATICA;
-    const TITULO = req.params.TITULO;
-    const ID_LIDER = req.params.ID_LIDER;
-    const PONTO = req.params.PONTO;
-    const GOSTEI = req.params.GOSTEI;
-    const DENUNCIA = req.params.DENUNCIA;
-    const STATUS = req.params.STATUS;
-
-    var sqlQry = `INSERT INTO USUARIO (ID_TEMATICA, TITULO, ID_LIDER, PONTO, GOSTEI, DENUNCIA, STATUS) 
-    VALUES ('${ID_TEMATICA}','${TITULO}','${ID_LIDER}','${PONTO}','${GOSTEI}','${DENUNCIA}','${STATUS}')`;
-
-    execute.executeSQL(sqlQry, function (results) {
-
-        if (results['insertId'] > 0) {
-            res.status(200).send({ results });
-        } else {
-            res.status(405).send(results);
-        }
-    });
-
-});
-
 exports.novoArco = ('/novoArco/:ID_LIDER/:ID_TEMATICA', (req, res) => {
 
     const ID_LIDER = req.params.ID_LIDER;
@@ -257,9 +87,9 @@ exports.novoArco = ('/novoArco/:ID_LIDER/:ID_TEMATICA', (req, res) => {
     var DATA_HORA = require('./util').dataAtual();
 
 
-    //STATUS 1 = EM DESENVOLVIMENTO
-    //STATUS 2 = FINALIZADO
-    var sqlQry1 = `INSERT INTO ARCO (ID_TEMATICA, ID_LIDER, DATA_HORA, STATUS) 
+    //SITUACAO 1 = EM DESENVOLVIMENTO
+    //SITUACAO 2 = FINALIZADO
+    var sqlQry1 = `INSERT INTO ARCO (ID_TEMATICA, ID_LIDER, DATA_HORA, SITUACAO) 
     VALUES (${ID_TEMATICA},${ID_LIDER},'${DATA_HORA}',1)`;
 
     execute.executeSQL(sqlQry1, function (results) {
@@ -271,13 +101,12 @@ exports.novoArco = ('/novoArco/:ID_LIDER/:ID_TEMATICA', (req, res) => {
         }
     });
 });
-
 function inserirEtapas(ID_ARCO, res) {
     
-    //STATUS 1 = EM DESENVOLVIMENTO
-    //STATUS 2 = FINALIZADO
+    //SITUACAO 1 = EM DESENVOLVIMENTO
+    //SITUACAO 2 = FINALIZADO
 
-    var sqlQry2 = `INSERT INTO ETAPA (ID_ARCO, NOME, DESCRICAO, STATUS, CODIGO) VALUES 
+    var sqlQry2 = `INSERT INTO ETAPA (ID_ARCO, NOME, DESCRICAO, SITUACAO, CODIGO) VALUES 
     (${ID_ARCO},'OBSERVAÇÃO DA REALIDADE',' ----- ',1,1),
     (${ID_ARCO},'PONTOS CHAVES',' ----- ',1,2),
     (${ID_ARCO},'TEORIZAÇÃO',' ----- ',1,3),
@@ -294,90 +123,4 @@ function inserirEtapas(ID_ARCO, res) {
     });
 }
 
-exports.listar = ('/listar', (req, res) => {
-    var sqlQry = `SELECT * FROM ARCO`;
-    execute.executeSQL(sqlQry, function (results) {
-        if (results.length > 0) {
-            res.status(200).send(results)
-        } else {
-            res.status(405).send(results);
-        }
-    });
-})
 
-exports.denunciarArco = ('/denunciarArco/:ID_USUARIO/:ID_ARCO/:DESCRICAO', (req, res) => {
-
-    var sqlQry = `INSERT INTO INFO_ARCO (ID_USUARIO, ID_ARCO, DESCRICAO, TIPO)
-     VALUES (${req.params.ID_USUARIO}, ${req.params.ID_ARCO}, '${req.params.DESCRICAO}','2')`;
-
-    execute.executeSQL(sqlQry, function (results) {
-        res.status(200).send(results)
-    });
-
-})
-
-exports.buscarArcosComaprtilhados = ('/buscarArcosComaprtilhados', (req, res) => {
-    var sqlQry = `SELECT a.ID, t.TITULO as TEMATICA, a.TITULO, a.PONTO, a.GOSTEI 
-    FROM ARCO as a 
-    inner join TEMATICA as t 
-    inner join EQUIPE as e
-	ON a.ID_TEMATICA = t.ID 
-    AND e.ID_ARCO = a.ID
-    GROUP BY a.ID;`;
-    execute.executeSQL(sqlQry, function (results) {
-        if (results.length > 0) {
-            res.status(200).send(results)
-        } else {
-            res.status(405).send(results);
-        }
-    });
-
-
-})
-
-exports.buscarRanking = ('/buscarRanking', (req, res) => {
-    var sqlQry = `SELECT * FROM USUARIO WHERE TIPO = 2 ORDER BY PONTO DESC LIMIT 10 `;
-    execute.executeSQL(sqlQry, function (results) {
-        if (results.length > 0) {
-            res.status(200).send(results)
-        } else {
-            res.status(405).send(results);
-        }
-    });
-
-
-})
-
-exports.gerarmedia = ('/gerarmedia/:list', (req, res) => {
-
-    var json = JSON.parse(req.params.list)
-
-    var sqlQry = `SELECT SUM(PONTO) AS PONTO FROM ARCO WHERE`;
-
-    if (json.length > 0) {
-        for (var i = 0; i < json.length; i++) {
-            if (i < json.length - 1) {
-                sqlQry = sqlQry + ` ID = ${json[i]} OR`
-            } else {
-                sqlQry = sqlQry + ` ID = ${json[i]};`
-            }
-        }
-
-        execute.executeSQL(sqlQry, function (results) {
-            if (results.length > 0) {
-
-                var total = (results[0].PONTO * 100)
-                total = total / 25
-                total = total / json.length
-
-
-                res.status(200).send(total + '')
-
-            } else {
-                res.status(405).send(results);
-            }
-        });
-    }
-
-
-})
