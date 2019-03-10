@@ -2,10 +2,39 @@
 const socket = require('../server/serverSocket');
 const execute = require('../executeSQL');
 
-
-    socket.on('teste', function (teste) {
-        console.log(teste)
+socket.on('connection', (io) => {
+    io.on('SOLICITACAO', function (CODIGO) {
+        buscarSolicitacao(io, CODIGO)
     })
+
+    io.on('NUM_SOLICITACAO', function (CODIGO) {
+        buscarNumSolicitacao(io, CODIGO)
+    })
+
+});
+
+function buscarSolicitacao(io, CODIGO) {
+    var msg = 'SOLICITACAO' + CODIGO;
+    var sqlQry = `SELECT u.ID, u.NOME, u.SOBRENOME, u.DATA_NASC, u.ESCOLARIDADE FROM EQUIPE AS e INNER JOIN USUARIO AS u ON e.ID_USUARIO = u.ID WHERE CODIGO = '${CODIGO}' AND e.SITUACAO = 1;`;
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            io.emit(msg, results);
+            io.broadcast.emit(msg, results);
+        }
+    });
+}
+
+
+function buscarNumSolicitacao(io, CODIGO) {
+    var msg = 'NUM_SOLICITACAO' + CODIGO;
+    var sqlQry = `SELECT count(e.ID) AS NUM_SOLICITACOES FROM EQUIPE AS e INNER JOIN USUARIO AS u ON e.ID_USUARIO = u.ID WHERE CODIGO = '${CODIGO}' AND e.SITUACAO = 1;`;
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            io.emit(msg, results[0]['NUM_SOLICITACOES']);
+            io.broadcast.emit(msg, results[0]['NUM_SOLICITACOES']);
+        }
+    });
+}
 
 
 exports.buscar = ('/buscar/:ID_ARCO', (req, res) => {
