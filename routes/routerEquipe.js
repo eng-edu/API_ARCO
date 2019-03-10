@@ -9,9 +9,10 @@ const manterEquipe = require('../controllers/manterEquipe')
 
 //rotas
 router.get('/buscar/:ID_ARCO', manterEquipe.buscar)
-router.post('/inserirMenbro/:ID_ARCO/:ID_USUARIO/:NOME', manterEquipe.inserirMenbro)
+router.post('/inserirMenbro/:CODIGO/:ID_USUARIO/', manterEquipe.inserirMenbro)
 router.delete('/removerMenbro/:ID_USUARIO', manterEquipe.removerMenbro)
 router.get('/listar', manterEquipe.listar)
+router.get('/teste', manterEquipe.teste)
 
 //exporta o modulo
 module.exports = router
