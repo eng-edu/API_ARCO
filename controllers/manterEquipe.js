@@ -17,10 +17,8 @@ function buscarSolicitacao(io, CODIGO) {
     var msg = 'SOLICITACAO' + CODIGO;
     var sqlQry = `SELECT u.ID, u.NOME, u.SOBRENOME, u.DATA_NASC, u.ESCOLARIDADE FROM EQUIPE AS e INNER JOIN USUARIO AS u ON e.ID_USUARIO = u.ID WHERE CODIGO = '${CODIGO}' AND e.SITUACAO = 1;`;
     execute.executeSQL(sqlQry, function (results) {
-        if (results.length > 0) {
-            io.emit(msg, results);
-            io.broadcast.emit(msg, results);
-        }
+        io.emit(msg, results);
+        io.broadcast.emit(msg, results);
     });
 }
 
@@ -29,10 +27,8 @@ function buscarNumSolicitacao(io, CODIGO) {
     var msg = 'NUM_SOLICITACAO' + CODIGO;
     var sqlQry = `SELECT count(e.ID) AS NUM_SOLICITACOES FROM EQUIPE AS e INNER JOIN USUARIO AS u ON e.ID_USUARIO = u.ID WHERE CODIGO = '${CODIGO}' AND e.SITUACAO = 1;`;
     execute.executeSQL(sqlQry, function (results) {
-        if (results.length > 0) {
-            io.emit(msg, results[0]['NUM_SOLICITACOES']);
-            io.broadcast.emit(msg, results[0]['NUM_SOLICITACOES']);
-        }
+        io.emit(msg, results[0]['NUM_SOLICITACOES']);
+        io.broadcast.emit(msg, results[0]['NUM_SOLICITACOES']);
     });
 }
 
@@ -73,7 +69,7 @@ exports.inserirMenbro = ('/inserirMenbro/:CODIGO/:ID_USUARIO/', (req, res) => {
             execute.executeSQL(sqlQry, function (results) {
 
                 if (results['insertId'] > 0) {
-                    inserirOpiniao(results['insertId'], ID_USUARIO, res)
+                    res.status(200).send(results);
                 } else {
                     res.status(203).send(results);
                 }
@@ -88,7 +84,7 @@ exports.inserirMenbro = ('/inserirMenbro/:CODIGO/:ID_USUARIO/', (req, res) => {
 
 exports.teste = ('/teste', (req, res) => {
     res.status(200).send('testando...')
-        socket.emit('teste', 'testando')
+    socket.emit('teste', 'testando')
 });
 
 function notiificarLider(CODIGO) {
@@ -168,3 +164,41 @@ exports.listar = ('/listar', (req, res) => {
 
 })
 
+
+exports.aceitarSolicitacao = ('/aceitarSolicitacao/:CODIGO/:ID_USUARIO', (req, res) => {
+
+    const CODIGO = req.params.CODIGO;
+    const ID_USUARIO = req.params.ID_USUARIO;
+
+    var sqlQry = `UPDATE EQUIPE SET SITUACAO = 2 WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO = '${CODIGO}'`;
+
+    execute.executeSQL(sqlQry, function (results) {
+
+        if (results['affectedRows'] > 0) {
+            res.status(200).send(results);
+        } else {
+            res.status(203).send(results);
+        }
+
+    });
+
+});
+
+exports.recusarSolicitacao = ('/recusarSolicitacao/:CODIGO/:ID_USUARIO', (req, res) => {
+
+    const CODIGO = req.params.CODIGO;
+    const ID_USUARIO = req.params.ID_USUARIO;
+
+    var sqlQry = `DELETE FROM EQUIPE WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO = '${CODIGO}'`;
+
+    execute.executeSQL(sqlQry, function (results) {
+
+        if (results['affectedRows'] > 0) {
+            res.status(200).send(results);
+        } else {
+            res.status(203).send(results);
+        }
+
+    });
+
+});

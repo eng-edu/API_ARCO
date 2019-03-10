@@ -152,7 +152,7 @@ function gerarCodigoEquipe(ID_ARCO, ID_LIDER, res) {
     execute.executeSQL(sqlQry1, function (results) {
 
         if (results['affectedRows'] > 0) {
-            inserirliderNaEquipe(CODIGO_EQUIPE, ID_LIDER, res)
+            inserirliderNaEquipe(CODIGO_EQUIPE, ID_LIDER, ID_ARCO, res)
         } else {
             res.status(203).send(results);
         }
@@ -160,7 +160,7 @@ function gerarCodigoEquipe(ID_ARCO, ID_LIDER, res) {
 
 }
 
-function inserirliderNaEquipe(CODIGO_EQUIPE, ID_USUARIO, res) {
+function inserirliderNaEquipe(CODIGO_EQUIPE, ID_USUARIO, ID_ARCO, res) {
 
     //SITUACAO 1 = AGUARDANDO
     //SITUACAO 2 = APROVADO
@@ -170,7 +170,9 @@ function inserirliderNaEquipe(CODIGO_EQUIPE, ID_USUARIO, res) {
     execute.executeSQL(sqlQry, function (results) {
 
         if (results['insertId'] > 0) {
-            res.status(200).send(results);
+            res.status(200).send({
+                ID_ARCO: ID_ARCO
+            });
         } else {
             res.status(203).send(results);
         }
