@@ -60,7 +60,7 @@ exports.inserirMenbro = ('/inserirMenbro/:CODIGO/:ID_USUARIO/', (req, res) => {
 
         if (results.length > 0) {
 
-            execute.executeSQL(`SELECT * FROM EQUIPE WHERE ID_USUARIO = ${ID_USUARIO}`, function (results1) {
+            execute.executeSQL(`SELECT * FROM EQUIPE WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO = '${CODIGO}'`, function (results1) {
 
                 if (results1.length > 0) {
                     res.status(203).send('Error, você tem vinculo com esse arco!');
