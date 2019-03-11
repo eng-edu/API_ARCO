@@ -12,7 +12,7 @@ socket.on('connection', (io) => {
 
 function buscarNotificacao(io, ID_USUARIO) {
     var msg = 'NOTIFICACAO' + ID_USUARIO;
-    var sqlQry = `SELECT * FROM NOTIFICACAO WHERE ID_USUARIO = ${ID_USUARIO}`;
+    var sqlQry = `SELECT * FROM NOTIFICACAO WHERE ID_USUARIO = ${ID_USUARIO} ORDER BY ID DESC LIMIT 10;`;
     execute.executeSQL(sqlQry, function (results) {
         io.emit(msg, results);
         io.broadcast.emit(msg, results);
