@@ -46,6 +46,7 @@ app.use('/tematica', require('./routes/routerTematica'))
 app.use('/arco', require('./routes/routerArco'))
 app.use('/etapa', require('./routes/routerEtapa'))
 app.use('/equipe', require('./routes/routerEquipe'))
+app.use('/notificacao', require('./routes/routerNotificacao'))
 app.use(express.static('uploads'));
 
 //exporta o modulo
