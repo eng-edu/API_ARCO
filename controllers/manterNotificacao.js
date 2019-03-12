@@ -12,12 +12,21 @@ socket.on('connection', (io) => {
         buscarNumNotificacao(io, ID_USUARIO)
     })
 
+    io.on('VIU_NOTIFICACAO', function (ID) {
+        var msg = 'VIU_NOTIFICACAO' + ID;
+        var sqlQry = `UPDATE NOTIFICACAO SET SITUACAO = 3 WHERE ID = ${ID}`;
+        execute.executeSQL(sqlQry, function (results) {
+            io.emit(msg, results);
+            io.broadcast.emit(msg, results);
+        });
+    })
+
 
 });
 
 function buscarNotificacao(io, ID_USUARIO) {
     var msg = 'NOTIFICACAO' + ID_USUARIO;
-    var sqlQry = `SELECT * FROM NOTIFICACAO WHERE ID_USUARIO = ${ID_USUARIO} ORDER BY ID DESC LIMIT 10;`;
+    var sqlQry = `SELECT * FROM NOTIFICACAO WHERE ID_USUARIO = ${ID_USUARIO} ORDER BY ID DESC LIMIT 50;`;
     execute.executeSQL(sqlQry, function (results) {
         io.emit(msg, results);
         io.broadcast.emit(msg, results);
