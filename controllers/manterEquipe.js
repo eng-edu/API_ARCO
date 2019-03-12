@@ -89,7 +89,7 @@ exports.inserirMenbro = ('/inserirMenbro/:CODIGO/:ID_USUARIO/', (req, res) => {
 
                         if (results2['insertId'] > 0) {
                             execute.executeSQL(`SELECT ID, ID_LIDER FROM ARCO WHERE CODIGO_EQUIPE = '${CODIGO}'`, function (results3) {
-                               
+
                                 if (results3.length > 0) {
                                     inserirNoticacao.inserirNotificacao(results3[0].ID_LIDER, results3[0].ID, 'Você possui uma solicitação de participação!', res)
                                 } else {
@@ -137,16 +137,19 @@ function inserirOpiniao(ID_ETAPA, ID_USUARIO, res) {
 }
 
 
-exports.removerMenbro = ('/removerMenbro/:ID_USUARIO', (req, res) => {
+exports.removerMenbro = ('/removerMenbro/:CODIGO/:ID_USUARIO', (req, res) => {
 
     const ID_USUARIO = req.params.ID_USUARIO;
+    const CODIGO = req.params.CODIGO;
 
-    var sqlQry = `DELETE FROM EQUIPE WHERE ID_USUARIO = '${ID_USUARIO}'`;
+    console.log(ID_USUARIO)
+
+    var sqlQry = `DELETE FROM EQUIPE WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO = '${CODIGO}'`;
 
     execute.executeSQL(sqlQry, function (results) {
 
         if (results['affectedRows'] > 0) {
-            removerOpiniao(ID_USUARIO, res)
+            res.status(200).send(results);
         } else {
             res.status(203).send(results);
         }
@@ -194,9 +197,9 @@ exports.aceitarSolicitacao = ('/aceitarSolicitacao/:CODIGO/:ID_USUARIO', (req, r
 
         if (results['affectedRows'] > 0) {
             execute.executeSQL(`SELECT ID FROM ARCO WHERE CODIGO_EQUIPE = '${CODIGO}'`, function (results1) {
-               
+
                 if (results1.length > 0) {
-                    inserirNoticacao.inserirNotificacao(ID_USUARIO, results1[0].ID, 'Você faz parte de um novo arco!',res)
+                    inserirNoticacao.inserirNotificacao(ID_USUARIO, results1[0].ID, 'Você faz parte de um novo arco!', res)
                 } else {
                     res.status(203).send(results1);
                 }
@@ -228,3 +231,5 @@ exports.recusarSolicitacao = ('/recusarSolicitacao/:CODIGO/:ID_USUARIO', (req, r
     });
 
 });
+
+
