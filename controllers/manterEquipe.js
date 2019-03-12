@@ -13,6 +13,11 @@ socket.on('connection', (io) => {
     })
 
 
+    io.on('EQUIPE', function (CODIGO) {
+        buscarEquipe(io, CODIGO)
+    })
+
+
 });
 
 function buscarSolicitacao(io, CODIGO) {
@@ -25,6 +30,8 @@ function buscarSolicitacao(io, CODIGO) {
 }
 
 
+
+
 function buscarNumSolicitacao(io, CODIGO) {
     var msg = 'NUM_SOLICITACAO' + CODIGO;
     var sqlQry = `SELECT count(e.ID) AS NUM_SOLICITACOES FROM EQUIPE AS e INNER JOIN USUARIO AS u ON e.ID_USUARIO = u.ID WHERE CODIGO = '${CODIGO}' AND e.SITUACAO = 1;`;
@@ -33,6 +40,18 @@ function buscarNumSolicitacao(io, CODIGO) {
         io.broadcast.emit(msg, results[0]['NUM_SOLICITACOES']);
     });
 }
+
+
+function buscarEquipe(io, CODIGO) {
+    var msg = 'EQUIPE' + CODIGO;
+    var sqlQry = `SELECT u.ID, u.NOME, u.SOBRENOME, u.DATA_NASC, u.ESCOLARIDADE FROM EQUIPE AS e INNER JOIN USUARIO AS u ON e.ID_USUARIO = u.ID WHERE CODIGO = '${CODIGO}' AND e.SITUACAO = 2;`;
+    execute.executeSQL(sqlQry, function (results) {
+        io.emit(msg, results);
+        io.broadcast.emit(msg, results);
+    });
+}
+
+
 
 exports.buscar = ('/buscar/:ID_ARCO', (req, res) => {
     var sqlQry = `SELECT * FROM EQUIPE WHERE ID = '${req.params.ID}'`;
