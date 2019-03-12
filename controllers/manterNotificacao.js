@@ -34,7 +34,7 @@ function buscarNumNotificacao(io, ID_USUARIO) {
         io.broadcast.emit(msg, results[0]['NUM_NOTIFICACAO']);
 
         if (results.length > 0) {
-            execute.executeSQL(`UPDATE NOTIFICACAO SET SITUACAO = 2 WHERE ID_USUARIO = ${ID_USUARIO}`, function (results) {
+            execute.executeSQL(`UPDATE NOTIFICACAO SET SITUACAO = 2 WHERE ID_USUARIO = ${ID_USUARIO} AND SITUACAO = 1`, function (results) {
                 if (results.length > 0) {
                     
                 } 
