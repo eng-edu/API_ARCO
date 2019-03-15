@@ -1,54 +1,70 @@
 'use strict';
 
+const socket = require('../server/serverSocket');
 const execute = require('../executeSQL');
 
-exports.buscar = ('/buscar/:ID_ARCO/:ID_USUARIO', (req, res) => {
-    var sqlQry = `SELECT * FROM ETAPA WHERE ID_ARCO = ${req.params.ID_ARCO} AND SITUACAO = 1 OR SITUACAO = 3;`;
-    execute.executeSQL(sqlQry, function (results) {
-
-        if (results.length > 0) {
-            soulider(req.params.ID_USUARIO, req.params.ID_ARCO, res, results)
-        } else {
-            res.status(405).send(results);
-        }
-       
-    });
-
-})
-
-exports.inserir = ('/inserir/:CODIGO/:TITULO/:ID_ARCO/:TEXTO/:PONTO/:STATUS', (req, res) => {
-
-    const CODIGO = req.params.CODIGO;
-    const TITULO = req.params.TITULO;
-    const ID_ARCO = req.params.ID_ARCO;
-    const TEXTO = req.params.TEXTO;
-    const PONTO = req.params.PONTO;
-    const STATUS = req.params.STATUS;
-
-    var sqlQry = `INSERT INTO USUARIO (CODIGO, TITULO, ID_ARCO, TEXTO, PONTO, STATUS) 
-    VALUES ('${CODIGO}','${TITULO}','${ID_ARCO}','${TEXTO}','${PONTO}','${STATUS}')`;
-
-    execute.executeSQL(sqlQry, function (results) {
-
-        if (results['insertId'] > 0) {
-            res.status(200).send({ results });
-        } else {
-            res.status(405).send(results);
-        }
-       
-    });
-
+socket.on('connection', (io) => {
+    io.on('ARCO', function (ID_ARCO) {
+        buscarEtapa(io, ID_ARCO)
+    })
 });
 
-exports.listar = ('/listar', (req, res) => {
-    var sqlQry = `SELECT * FROM ETAPA`;
+function buscarEtapa(io, ID_ARCO) {
+    var msg = 'ETAPA' + ID_ARCO;
+    var sqlQry = `SELECT 
+    e.ID,
+    e.NOME AS NOME_ETAPA,
+    e.SITUACAO AS SITUACAO_ETAPA,
+    e.CODIGO AS CODIGO_ETAPA,
+    e.DESCRICAO_LIDER AS DESCRICAO_ETAPA_LIDER,
+    e.DESCRICAO_MENBRO AS DESCRICAO_ETAPA_MENBRO,
+    t.NOME AS NOME_TEMATICA,
+    t.DESCRICAO AS DESCRICAO_TEMATICA
+FROM
+    ETAPA AS e
+        INNER JOIN
+    ARCO AS a ON e.ID_ARCO = a.ID
+        INNER JOIN
+    TEMATICA AS t ON a.ID_TEMATICA = t.ID
+WHERE
+    a.ID = ${ID_ARCO};`;
+
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
-            res.status(200).send(results)
+            io.emit(msg, results);
+            io.broadcast.emit(msg, results);
+        }
+    });
+}
+
+exports.buscarEtapa = ('/buscarEtapa/:ID_ETAPA', (req, res) => {
+    var sqlQry = `SELECT 
+    e.ID,
+    e.NOME AS NOME_ETAPA,
+    e.SITUACAO AS SITUACAO_ETAPA,
+    e.CODIGO AS CODIGO_ETAPA,
+    e.DESCRICAO_LIDER AS DESCRICAO_ETAPA_LIDER,
+    e.DESCRICAO_MENBRO AS DESCRICAO_ETAPA_MENBRO,
+    t.NOME AS NOME_TEMATICA,
+    t.DESCRICAO AS DESCRICAO_TEMATICA
+FROM
+    ETAPA AS e
+        INNER JOIN
+    ARCO AS a ON e.ID_ARCO = a.ID
+        INNER JOIN
+    TEMATICA AS t ON t.ID = a.ID_TEMATICA
+WHERE
+    e.ID = ${req.params.ID_ETAPA};`;
+    execute.executeSQL(sqlQry, function (results) {
+
+        if (results.length > 0) {
+            res.status(200).send(results[0]);
         } else {
-            res.status(405).send(results);
+            res.status(203).send(results);
         }
        
     });
 
 })
+
+

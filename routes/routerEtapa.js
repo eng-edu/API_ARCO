@@ -8,9 +8,8 @@ const multiparty = require('connect-multiparty');
 const manterEtapa = require('../controllers/manterEtapa')
 
 //rotas
-router.get('/buscar/:ID_ARCO/:ID_USUARIO', manterEtapa.buscar)
-router.post('/inserir/:CODIGO/:TITULO/:ID_ARCO/:TEXTO/:PONTO/:STATUS', manterEtapa.inserir)
-router.get('/listar', manterEtapa.listar)
+router.get('/buscarEtapa/:ID_ETAPA', manterEtapa.buscarEtapa)
+
 
 //exporta o modulo
 module.exports = router

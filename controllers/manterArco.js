@@ -7,11 +7,6 @@ socket.on('connection', (io) => {
     io.on('ARCO', function (ID_ARCO) {
         buscarArco(io, ID_ARCO)
     })
-
-    io.on('ETAPA', function (ID_ARCO) {
-        buscarEtapa(io, ID_ARCO)
-    })
-
 });
 
 function buscarArco(io, ID) {
@@ -32,33 +27,6 @@ FROM
     });
 }
 
-function buscarEtapa(io, ID_ARCO) {
-    var msg = 'ETAPA' + ID_ARCO;
-    var sqlQry = `SELECT 
-    e.ID,
-    e.NOME AS NOME_ETAPA,
-    e.SITUACAO AS SITUACAO_ETAPA,
-    e.CODIGO AS CODIGO_ETAPA,
-    e.DESCRICAO_LIDER AS DESCRICAO_ETAPA_LIDER,
-    e.DESCRICAO_MENBRO AS DESCRICAO_ETAPA_MENBRO,
-    t.NOME AS NOME_TEMATICA,
-    t.DESCRICAO AS DESCRICAO_TEMATICA
-FROM
-    ETAPA AS e
-        INNER JOIN
-    ARCO AS a ON e.ID_ARCO = a.ID
-        INNER JOIN
-    TEMATICA AS t ON a.ID_TEMATICA = t.ID
-WHERE
-    a.ID = ${ID_ARCO};`;
-
-    execute.executeSQL(sqlQry, function (results) {
-        if (results.length > 0) {
-            io.emit(msg, results);
-            io.broadcast.emit(msg, results);
-        }
-    });
-}
 
 exports.buscarMeusArcos = ('/buscarMeusArcos/:ID_USUARIO', (req, res) => {
 
