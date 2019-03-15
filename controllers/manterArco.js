@@ -12,10 +12,6 @@ socket.on('connection', (io) => {
         buscarEtapa(io, ID_ARCO)
     })
 
-    io.on('OPINIAO', function (ID_ARCO) {
-        buscarOpiniao(io, ID_ARCO)
-    })
-
 });
 
 function buscarArco(io, ID) {
@@ -56,17 +52,6 @@ FROM
 WHERE
     a.ID = ${ID_ARCO};`;
 
-    execute.executeSQL(sqlQry, function (results) {
-        if (results.length > 0) {
-            io.emit(msg, results);
-            io.broadcast.emit(msg, results);
-        }
-    });
-}
-
-function buscarOpiniao(io, ID_ARCO) {
-    var msg = 'ETAPA' + ID_ARCO;
-    var sqlQry = `SELECT ID, STATUS, CODIGO FROM ETAPA WHERE ID_ARCO = ${ID_ARCO}`;
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             io.emit(msg, results);
@@ -126,12 +111,12 @@ function inserirEtapas(ID_ARCO, ID_LIDER, res) {
     //SITUACAO 2 = FINALIZADO
     //SITUACAO 3 = BLOQUEADO
 
-    var sqlQry2 = `INSERT INTO ETAPA (ID_ARCO, NOME, DESCRICAO, SITUACAO, CODIGO) VALUES 
-    (${ID_ARCO},'OBSERVAÇÃO DA REALIDADE',' ----- ',1,1),
-    (${ID_ARCO},'PONTOS CHAVES',' ----- ',3,2),
-    (${ID_ARCO},'TEORIZAÇÃO',' ----- ',3,3),
-    (${ID_ARCO},'HIPÓTESES DE SOLUÇÃO',' ----- ',3,4),
-    (${ID_ARCO},'APLICAÇÃO A REALIDADE',' ----- ',3,5)`;
+    var sqlQry2 = `INSERT INTO ETAPA (ID_ARCO, NOME, DESCRICAO_LIDER, DESCRICAO_MENBRO, SITUACAO, CODIGO) VALUES 
+    (${ID_ARCO},'OBSERVAÇÃO DA REALIDADE','-','-',1,1),
+    (${ID_ARCO},'PONTOS CHAVES','-','-',3,2),
+    (${ID_ARCO},'TEORIZAÇÃO','-','-',3,3),
+    (${ID_ARCO},'HIPÓTESES DE SOLUÇÃO','-','-',3,4),
+    (${ID_ARCO},'APLICAÇÃO A REALIDADE','-','-',3,5)`;
 
     execute.executeSQL(sqlQry2, function (results) {
         if (results['insertId'] > 0) {

@@ -1,7 +1,9 @@
 'use strict';
 const socket = require('../server/serverSocket');
 const execute = require('../executeSQL');
-const inserirNoticacao = require('../controllers/manterNotificacao')
+const manterNotificacao = require('../controllers/manterNotificacao')
+
+
 
 socket.on('connection', (io) => {
     io.on('SOLICITACAO', function (CODIGO) {
@@ -30,8 +32,6 @@ function buscarSolicitacao(io, CODIGO) {
 }
 
 
-
-
 function buscarNumSolicitacao(io, CODIGO) {
     var msg = 'NUM_SOLICITACAO' + CODIGO;
     var sqlQry = `SELECT count(e.ID) AS NUM_SOLICITACOES FROM EQUIPE AS e INNER JOIN USUARIO AS u ON e.ID_USUARIO = u.ID WHERE CODIGO = '${CODIGO}' AND e.SITUACAO = 1;`;
@@ -50,7 +50,6 @@ function buscarEquipe(io, CODIGO) {
         io.broadcast.emit(msg, results);
     });
 }
-
 
 
 exports.buscar = ('/buscar/:ID_ARCO', (req, res) => {
@@ -91,7 +90,8 @@ exports.inserirMenbro = ('/inserirMenbro/:CODIGO/:ID_USUARIO/', (req, res) => {
                             execute.executeSQL(`SELECT ID, ID_LIDER FROM ARCO WHERE CODIGO_EQUIPE = '${CODIGO}'`, function (results3) {
 
                                 if (results3.length > 0) {
-                                    inserirNoticacao.inserirNotificacao(results3[0].ID_LIDER, results3[0].ID, 'Você possui uma solicitação de participação!', res)
+                                    manterNotificacao.inserirNotificacao(results3[0].ID_LIDER, results3[0].ID, 'Você possui uma solicitação de participação!', res)
+                                  
                                 } else {
                                     res.status(203).send(results3);
                                 }
@@ -113,28 +113,6 @@ exports.inserirMenbro = ('/inserirMenbro/:CODIGO/:ID_USUARIO/', (req, res) => {
     });
 
 });
-
-
-
-
-function inserirOpiniao(ID_ETAPA, ID_USUARIO, res) {
-
-    //STATUS 1 = EM DESENVOLVIMENTO
-    //STATUS 2 = FINALIZADO
-
-    var DATA_HORA = require('./util').dataAtual();
-
-    var sqlQry2 = `INSERT INTO OPINIAO (ID_ETAPA, ID_USUARIO, DATA_HORA, STATUS, ESTRELAS) 
-    VALUES (${ID_ETAPA},${ID_USUARIO},'${DATA_HORA}',1,0)`;
-
-    execute.executeSQL(sqlQry2, function (results) {
-        if (results['insertId'] > 0) {
-            res.status(200).send(results);
-        } else {
-            res.status(203).send(results);
-        }
-    });
-}
 
 
 exports.removerMenbro = ('/removerMenbro/:CODIGO/:ID_USUARIO', (req, res) => {
@@ -159,19 +137,6 @@ exports.removerMenbro = ('/removerMenbro/:CODIGO/:ID_USUARIO', (req, res) => {
 });
 
 
-function removerOpiniao(ID_USUARIO, res) {
-
-    var sqlQry2 = `DELETE FROM OPINIAO WHERE ID_USUARIO = ${ID_USUARIO}`;
-    execute.executeSQL(sqlQry2, function (results) {
-        if (results['affectedRows'] > 0) {
-            res.status(200).send(results);
-        } else {
-            res.status(203).send(results);
-        }
-    });
-}
-
-
 exports.listar = ('/listar', (req, res) => {
     var sqlQry = `SELECT * FROM EQUIPE`;
     execute.executeSQL(sqlQry, function (results) {
@@ -184,7 +149,6 @@ exports.listar = ('/listar', (req, res) => {
     });
 
 })
-
 
 exports.aceitarSolicitacao = ('/aceitarSolicitacao/:CODIGO/:ID_USUARIO', (req, res) => {
 
@@ -199,7 +163,7 @@ exports.aceitarSolicitacao = ('/aceitarSolicitacao/:CODIGO/:ID_USUARIO', (req, r
             execute.executeSQL(`SELECT ID FROM ARCO WHERE CODIGO_EQUIPE = '${CODIGO}'`, function (results1) {
 
                 if (results1.length > 0) {
-                    inserirNoticacao.inserirNotificacao(ID_USUARIO, results1[0].ID, 'Você faz parte de um novo arco!', res)
+                    manterNotificacao.inserirNotificacao(ID_USUARIO, results1[0].ID, 'Você faz parte de um novo arco!', res)
                 } else {
                     res.status(203).send(results1);
                 }
