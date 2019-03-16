@@ -12,7 +12,16 @@ socket.on('connection', (io) => {
 
 function buscarOpiniao(io, ID_ETAPA) {
     var msg = 'OPINIAO' + ID_ETAPA;
-    var sqlQry = `SELECT * FROM OPINIAO WHERE ID_ETAPA = ${ID_ETAPA} AND e.SITUACAO = 1;`;
+    var sqlQry = `SELECT 
+    o.ID, o.ID_ETAPA, e.NOME AS NOME_ETAPA, o.ID_USUARIO, o.DATA_HORA, o.TEXTO
+FROM
+    OPINIAO AS o
+        INNER JOIN
+    ETAPA AS e ON o.ID_ETAPA = e.ID
+WHERE
+    ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 1;`;
+
+
     execute.executeSQL(sqlQry, function (results) {
         io.emit(msg, results);
         io.broadcast.emit(msg, results);
