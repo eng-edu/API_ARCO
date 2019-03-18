@@ -63,7 +63,6 @@ WHERE
 
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
-            console.log(results)
             res.status(200).send(results[0]);
         } else {
 
