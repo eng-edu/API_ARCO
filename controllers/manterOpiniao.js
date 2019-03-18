@@ -28,19 +28,17 @@ WHERE
     });
 }
 
-exports.novaOpiniao = ('/novaOpiniao/:ID_LIDER/:ID_TEMATICA', (req, res) => {
+exports.atualizarOpiniao = ('/atualizarOpiniao/:ID_USUARIO/:ID_ETAPA/:TEXTO', (req, res) => {
 
     const ID_USUARIO = req.params.ID_USUARIO;
     const ID_ETAPA = req.params.ID_ETAPA;
+    const TEXTO = req.params.TEXTO;
     var DATA_HORA = require('./util').dataAtual();
 
-    //SITUACAO 1 = EM DESENVOLVIMENTO
-    //SITUACAO 2 = FINALIZADO
-
-    var sqlQry = `INSERT INTO OPINIAO(ID_ETAPA, ID_USUARIO, SITUACAO, DATA_HORA) VALUES (${ID_USUARIO}, ${ID_ETAPA}, '1', '${DATA_HORA}')`;
+    var sqlQry = `UPDATE OPINIAO SET DATA_HORA = '${DATA_HORA}', TEXTO = '${TEXTO}' WHERE ID_ETAPA = ${ID_ETAPA} AND ID_USUARIO = ${ID_USUARIO}`;
 
     execute.executeSQL(sqlQry, function (results) {
-        if (results['insertId'] > 0) {
+        if (results['affectedRows'] > 0) {
             res.status(200).send(results);
         } else {
             res.status(203).send(results);
@@ -62,7 +60,6 @@ FROM
 WHERE
     ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 1 AND o.ID_USUARIO = ${ID_USUARIO};`;
 
-    console.log(sqlQry)
 
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
@@ -95,7 +92,6 @@ function inserirOpiniao(ID_USUARIO, ID_ETAPA, res) {
 
     })
 }
-
 
 function buscarOpiniao3(ID_USUARIO, ID_ETAPA, res) {
     var sqlQry = `SELECT  o.TEXTO

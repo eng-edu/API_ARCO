@@ -8,9 +8,9 @@ const multiparty = require('connect-multiparty');
 const manterOpiniao = require('../controllers/manterOpiniao')
 
 //rotas
-router.post('/novaOpiniao/:ID_LIDER/:ID_TEMATICA', manterOpiniao.novaOpiniao)
-//rotas
 router.get('/buscarOpiniao/:ID_USUARIO/:ID_ETAPA', manterOpiniao.buscarOpiniao2)
+router.put('/atualizarOpiniao/:ID_USUARIO/:ID_ETAPA/:TEXTO', manterOpiniao.atualizarOpiniao)
+
 
 
 
