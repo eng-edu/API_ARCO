@@ -4,11 +4,31 @@ const execute = require('../executeSQL');
 
 
 socket.on('connection', (io) => {
+
     io.on('OPINIAO', function (ID_ETAPA) {
         buscarOpiniao(io, ID_ETAPA)
     })
 
+    io.on('EU_CURTI', function (results) {
+        euCurti(io, results.ID_USUARIO, results.ID_OPINIAO)
+    })
+
+    io.on('CURTIU', function (results) {
+        curtiu(io, results.ID_USUARIO, results.ID_OPINIAO, results.CURTIU)
+    })
+
+    io.on('EU_ESTRELAS', function (results) {
+        euEstrelas(io, results.ID_USUARIO, results.ID_OPINIAO)
+    })
+
+    io.on('ESTRELAS', function (results) {
+        estrelas(io, results.ID_USUARIO, results.ID_OPINIAO, results.QUANTIDADE)
+    })
+
+
 });
+
+
 
 function buscarOpiniao(io, ID_ETAPA) {
     var msg = 'OPINIAO' + ID_ETAPA;
@@ -72,7 +92,6 @@ WHERE
     });
 });
 
-
 function inserirOpiniao(ID_USUARIO, ID_ETAPA, res) {
 
     var DATA_HORA = require('./util').dataAtual();
@@ -109,4 +128,91 @@ WHERE
         }
 
     });
+}
+
+function euCurti(io, ID_USUARIO, ID_OPINIAO) {
+
+    var msg = 'EU_CURTI' + ID_USUARIO;
+
+    var sqlQry = `SELECT * FROM CURTIDA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`;
+
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            io.emit(msg, results[0].CURTIU);
+            io.broadcast.emit(msg,results[0].CURTIU);
+        } else {
+            io.emit(msg, '2');
+            io.broadcast.emit(msg, '2');
+        }
+
+    });
+
+}
+
+function curtiu(io, ID_USUARIO, ID_OPINIAO, CURTIU) {
+
+    var msg = 'EU_CURTI' + ID_USUARIO;
+
+    execute.executeSQL(`SELECT * FROM CURTIDA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`, function (results) {
+        if (results.length > 0) {
+            execute.executeSQL(`UPDATE CURTIDA SET CURTIU = ${CURTIU}  WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`, function (results) {
+                if (results['affectedRows'] > 0) {
+                    io.emit(msg, CURTIU);
+                    io.broadcast.emit(msg, CURTIU);
+                }
+            });
+        } else {
+            execute.executeSQL(`INSERT INTO CURTIDA (ID_USUARIO, ID_OPINIAO, CURTIU) VALUES(${ID_USUARIO}, ${ID_OPINIAO}, '${CURTIU}') `, function (results) {
+                if (results['insertId'] > 0) {
+                    io.emit(msg, CURTIU);
+                    io.broadcast.emit(msg, CURTIU);
+                }
+            });
+        }
+
+    });
+}
+
+function euEstrelas(io, ID_USUARIO, ID_OPINIAO) {
+
+    var msg = 'EU_ESTRELAS' + ID_USUARIO;
+
+    var sqlQry = `SELECT QUANTIDADE FROM ESTRELA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`;
+
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            io.emit(msg, results[0].QUANTIADE);
+            io.broadcast.emit(msg, results[0].QUANTIADE);
+        } else {
+            io.emit(msg, '0');
+            io.broadcast.emit(msg, '0');
+        }
+
+    });
+}
+
+function estrelas(io, ID_USUARIO, ID_OPINIAO, QUANTIADE) {
+
+    var msg = 'EU_ESTRELAS' + ID_USUARIO;
+
+    execute.executeSQL(`SELECT QUANTIDADE FROM ESTRELA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`, function (results) {
+        if (results.length > 0) {
+            execute.executeSQL(`UPDATE ESTRELA SET QUANTIDADE = ${QUANTIADE}  WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`, function (results) {
+                if (results['affectedRows'] > 0) {
+                    io.emit(msg, QUANTIADE);
+                    io.broadcast.emit(msg, QUANTIADE);
+                }
+            });
+        } else {
+            execute.executeSQL(`INSERT INTO ESTRELA (ID_USUARIO, ID_OPINIAO, QUANTIDADE) VALUES(${ID_USUARIO}, ${ID_OPINIAO}, ${QUANTIADE}) `, function (results) {
+                if (results['insertId'] > 0) {
+                    io.emit(msg, QUANTIADE);
+                    io.broadcast.emit(msg, QUANTIADE);
+                }
+            });
+        }
+
+    });
+
+
 }
