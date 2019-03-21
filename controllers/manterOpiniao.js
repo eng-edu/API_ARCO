@@ -181,8 +181,8 @@ function euEstrelas(io, ID_USUARIO, ID_OPINIAO) {
 
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
-            io.emit(msg, results[0].QUANTIADE);
-            io.broadcast.emit(msg, results[0].QUANTIADE);
+            io.emit(msg, results[0].QUANTIDADE);
+            io.broadcast.emit(msg, results[0].QUANTIDADE);
         } else {
             io.emit(msg, '0');
             io.broadcast.emit(msg, '0');
