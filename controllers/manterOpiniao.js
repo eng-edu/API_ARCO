@@ -26,6 +26,10 @@ socket.on('connection', (io) => {
     })
 
 
+    io.on('QTD_CURTIDAS_ESTRELAS', function (ID_OPINIAO) {
+        qtdCurtidasEstrelas(io, ID_OPINIAO)
+    })
+
 });
 
 
@@ -139,7 +143,7 @@ function euCurti(io, ID_USUARIO, ID_OPINIAO) {
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             io.emit(msg, results[0].CURTIU);
-            io.broadcast.emit(msg,results[0].CURTIU);
+            io.broadcast.emit(msg, results[0].CURTIU);
         } else {
             io.emit(msg, '2');
             io.broadcast.emit(msg, '2');
@@ -214,5 +218,28 @@ function estrelas(io, ID_USUARIO, ID_OPINIAO, QUANTIADE) {
 
     });
 
+
+}
+
+
+function qtdCurtidasEstrelas(io, ID_OPINIAO) {
+
+    var resultadoFinal = 0
+
+
+    var msg = 'QTD_CURTIDAS_ESTRELAS' + ID_OPINIAO;
+
+    execute.executeSQL(`SELECT COUNT(CURTIU)  AS CURTIU FROM CURTIDA WHERE ID_OPINIAO = ${ID_OPINIAO} AND CURTIU = 1`, function (results1) {
+
+
+        execute.executeSQL(`SELECT SUM(QUANTIDADE) AS QUANTIDADE FROM ESTRELA WHERE ID_OPINIAO = ${ID_OPINIAO}`, function (results2) {
+
+            io.emit(msg, 'Essa etapa possuí ' + results1[0].CURTIU + ' curtidas e '+ results2[0].QUANTIDADE + ' estrelas');
+            io.broadcast.emit(msg,  'Essa etapa possuí ' + results1[0].CURTIU + ' curtidas e '+ results2[0].QUANTIDADE + ' estrelas');
+
+
+        });
+
+    });
 
 }
