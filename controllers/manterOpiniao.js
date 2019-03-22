@@ -37,14 +37,14 @@ socket.on('connection', (io) => {
 function buscarOpiniao(io, ID_ETAPA) {
     var msg = 'OPINIAO' + ID_ETAPA;
     var sqlQry = `SELECT 
-    o.ID, o.ID_ETAPA, e.NOME AS NOME_ETAPA, o.ID_USUARIO, o.DATA_HORA, o.TEXTO
+    o.ID, o.ID_ETAPA, e.NOME AS NOME_ETAPA, o.ID_USUARIO, o.DATA_HORA, o.TEXTO, a.ID_LIDER
 FROM
     OPINIAO AS o
         INNER JOIN
     ETAPA AS e ON o.ID_ETAPA = e.ID
+    INNER JOIN ARCO AS a ON e.ID_ARCO = a.ID
 WHERE
-    ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 1;`;
-
+    ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 1`;
 
     execute.executeSQL(sqlQry, function (results) {
         io.emit(msg, results);
@@ -225,10 +225,6 @@ function estrelas(io, ID_USUARIO, ID_OPINIAO, QUANTIADE) {
 
 
 function qtdCurtidasEstrelas(io, ID_OPINIAO) {
-
-    var resultadoFinal = 0
-
-
     var msg = 'QTD_CURTIDAS_ESTRELAS' + ID_OPINIAO;
 
     execute.executeSQL(`SELECT COUNT(CURTIU)  AS CURTIU FROM CURTIDA WHERE ID_OPINIAO = ${ID_OPINIAO} AND CURTIU = 1`, function (results1) {
