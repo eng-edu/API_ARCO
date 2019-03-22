@@ -241,3 +241,22 @@ function qtdCurtidasEstrelas(io, ID_OPINIAO) {
     });
 
 }
+
+
+exports.denunciar = ('/denunciar/:ID_OPINIAO/:ID_USUARIO/:TEXTO', (req, res) => {
+
+    const ID_OPINIAO = req.params.ID_OPINIAO;
+    const ID_USUARIO = req.params.ID_USUARIO;
+    const TEXTO = req.params.TEXTO;
+   
+    var sqlQry = `INSERT INTO DENUNCIA_OPINIAO (ID_OPINIAO, ID_USUARIO, TEXTO) VALUES (${ID_OPINIAO}, ${ID_USUARIO}, '${TEXTO}')`;
+
+    execute.executeSQL(sqlQry, function (results) {
+        if (results['insertId'] > 0) {
+            res.status(200).send('Denúncia realizada com sucesso!');
+        } else {
+            res.status(203).send('error!');
+        }
+
+    });
+});
