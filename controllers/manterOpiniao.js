@@ -136,7 +136,7 @@ WHERE
 
 function euCurti(io, ID_USUARIO, ID_OPINIAO) {
 
-    var msg = 'EU_CURTI' + ID_USUARIO;
+    var msg = 'EU_CURTI'  + ID_OPINIAO+ID_USUARIO;
 
     var sqlQry = `SELECT * FROM CURTIDA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`;
 
@@ -155,7 +155,7 @@ function euCurti(io, ID_USUARIO, ID_OPINIAO) {
 
 function curtiu(io, ID_USUARIO, ID_OPINIAO, CURTIU) {
 
-    var msg = 'EU_CURTI' + ID_USUARIO;
+    var msg = 'EU_CURTI'  + ID_OPINIAO+ID_USUARIO;
 
     execute.executeSQL(`SELECT * FROM CURTIDA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`, function (results) {
         if (results.length > 0) {
@@ -179,7 +179,8 @@ function curtiu(io, ID_USUARIO, ID_OPINIAO, CURTIU) {
 
 function euEstrelas(io, ID_USUARIO, ID_OPINIAO) {
 
-    var msg = 'EU_ESTRELAS' + ID_USUARIO;
+    var msg = 'EU_ESTRELAS' + ID_OPINIAO+ID_USUARIO;
+
 
     var sqlQry = `SELECT QUANTIDADE FROM ESTRELA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`;
 
@@ -197,7 +198,8 @@ function euEstrelas(io, ID_USUARIO, ID_OPINIAO) {
 
 function estrelas(io, ID_USUARIO, ID_OPINIAO, QUANTIADE) {
 
-    var msg = 'EU_ESTRELAS' + ID_USUARIO;
+    var msg = 'EU_ESTRELAS' + ID_OPINIAO+ID_USUARIO;
+
 
     execute.executeSQL(`SELECT QUANTIDADE FROM ESTRELA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`, function (results) {
         if (results.length > 0) {
