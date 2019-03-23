@@ -44,7 +44,7 @@ FROM
     ETAPA AS e ON o.ID_ETAPA = e.ID
     INNER JOIN ARCO AS a ON e.ID_ARCO = a.ID
 WHERE
-    ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 1`;
+    ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 1 OR ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 2`;
 
     execute.executeSQL(sqlQry, function (results) {
         io.emit(msg, results);

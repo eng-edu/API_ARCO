@@ -62,9 +62,49 @@ WHERE
         } else {
             res.status(203).send(results);
         }
-       
+
     });
 
 })
+
+exports.finalizarEtapa = ('/finalizarEtapa/:ID/:CODIGO', (req, res) => {
+
+    execute.executeSQL(`UPDATE ETAPA SET SITUACAO = 2 WHERE ID = ${req.params.ID}`, function (results1) {
+        if (results1['affectedRows'] > 0) {
+
+            execute.executeSQL(`UPDATE OPINIAO SET SITUACAO = 2 WHERE ID_ETAPA = ${req.params.ID}`, function (results2) {
+                if (results2['affectedRows'] > 0) {
+
+                    var proxID = req.params.ID;
+                    var proxCOD = req.params.CODIGO;
+
+                    if(req.params.CODIGO < 5){
+                            proxID++
+                            proxCOD++
+
+                    }else{
+                            //atualiza status do arco
+                    }
+
+                    execute.executeSQL(`UPDATE ETAPA SET SITUACAO = 1 WHERE ID = ${proxID} AND CODIGO = ${proxCOD}`, function (results3) {
+                        if (results3['affectedRows'] > 0) {
+                            res.status(200).send('Etapa finalizada com sucesso!')
+                        } else {
+                            res.status(203).send(results3);
+                        }
+                    });
+               
+
+                } else {
+                    res.status(203).send(results2);
+                }
+            });
+
+        } else {
+            res.status(203).send(results1);
+        }
+    });
+})
+
 
 
