@@ -59,7 +59,7 @@ exports.atualizarOpiniao = ('/atualizarOpiniao/:ID_USUARIO/:ID_ETAPA/:TEXTO', (r
     const TEXTO = req.params.TEXTO;
     var DATA_HORA = require('./util').dataAtual();
 
-    var sqlQry = `UPDATE OPINIAO SET DATA_HORA = '${DATA_HORA}', TEXTO = '${TEXTO}' WHERE ID_ETAPA = ${ID_ETAPA} AND ID_USUARIO = ${ID_USUARIO}`;
+    var sqlQry = `UPDATE OPINIAO SET DATA_HORA = '${DATA_HORA}', TEXTO = '${TEXTO}' WHERE ID_ETAPA = ${ID_ETAPA} AND ID_USUARIO = ${ID_USUARIO} AND SITUACAO = 1`;
 
     execute.executeSQL(sqlQry, function (results) {
         if (results['affectedRows'] > 0) {
@@ -82,7 +82,7 @@ FROM
         INNER JOIN
     ETAPA AS e ON o.ID_ETAPA = e.ID
 WHERE
-    ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 1 AND o.ID_USUARIO = ${ID_USUARIO};`;
+    ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 1 AND o.ID_USUARIO = ${ID_USUARIO} OR ID_ETAPA = ${ID_ETAPA} AND o.SITUACAO = 2 AND o.ID_USUARIO = ${ID_USUARIO};`;
 
 
     execute.executeSQL(sqlQry, function (results) {

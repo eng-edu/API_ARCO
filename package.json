@@ -2,7 +2,7 @@
   "name": "api_arco",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./server/server.js",
   "scripts": {
     "start": "nodemon ./server/server.js",
     "stop": "pm2 delete api_arco"
