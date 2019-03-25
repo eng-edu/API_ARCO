@@ -59,16 +59,25 @@ exports.atualizarOpiniao = ('/atualizarOpiniao/:ID_USUARIO/:ID_ETAPA/:TEXTO', (r
     const TEXTO = req.params.TEXTO;
     var DATA_HORA = require('./util').dataAtual();
 
-    var sqlQry = `UPDATE OPINIAO SET DATA_HORA = '${DATA_HORA}', TEXTO = '${TEXTO}' WHERE ID_ETAPA = ${ID_ETAPA} AND ID_USUARIO = ${ID_USUARIO} AND SITUACAO = 1`;
 
-    execute.executeSQL(sqlQry, function (results) {
-        if (results['affectedRows'] > 0) {
-            res.status(200).send(results);
+    execute.executeSQL(`SELECT * FROM OPINIAO  WHERE ID_ETAPA = ${ID_ETAPA} AND ID_USUARIO = ${ID_USUARIO} AND SITUACAO = 2`, function (results) {
+        if (results.length > 0) {
+            res.status(203).send('Essa etapa já está filizada, volte ao menu anterior e trabalhe na próxima!');
         } else {
-            res.status(203).send(results);
+
+            execute.executeSQL(`UPDATE OPINIAO SET DATA_HORA = '${DATA_HORA}', TEXTO = '${TEXTO}' WHERE ID_ETAPA = ${ID_ETAPA} AND ID_USUARIO = ${ID_USUARIO} AND SITUACAO = 1`, function (results) {
+                if (results['affectedRows'] > 0) {
+                    res.status(200).send(results);
+                } else {
+                    res.status(203).send(results);
+                }
+
+            });
         }
 
     });
+
+
 });
 
 exports.buscarOpiniao2 = ('/buscarOpiniao/:ID_USUARIO/:ID_ETAPA', (req, res) => {
@@ -136,7 +145,7 @@ WHERE
 
 function euCurti(io, ID_USUARIO, ID_OPINIAO) {
 
-    var msg = 'EU_CURTI'  + ID_OPINIAO+ID_USUARIO;
+    var msg = 'EU_CURTI' + ID_OPINIAO + ID_USUARIO;
 
     var sqlQry = `SELECT * FROM CURTIDA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`;
 
@@ -155,7 +164,7 @@ function euCurti(io, ID_USUARIO, ID_OPINIAO) {
 
 function curtiu(io, ID_USUARIO, ID_OPINIAO, CURTIU) {
 
-    var msg = 'EU_CURTI'  + ID_OPINIAO+ID_USUARIO;
+    var msg = 'EU_CURTI' + ID_OPINIAO + ID_USUARIO;
 
     execute.executeSQL(`SELECT * FROM CURTIDA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`, function (results) {
         if (results.length > 0) {
@@ -179,7 +188,7 @@ function curtiu(io, ID_USUARIO, ID_OPINIAO, CURTIU) {
 
 function euEstrelas(io, ID_USUARIO, ID_OPINIAO) {
 
-    var msg = 'EU_ESTRELAS' + ID_OPINIAO+ID_USUARIO;
+    var msg = 'EU_ESTRELAS' + ID_OPINIAO + ID_USUARIO;
 
 
     var sqlQry = `SELECT QUANTIDADE FROM ESTRELA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`;
@@ -198,7 +207,7 @@ function euEstrelas(io, ID_USUARIO, ID_OPINIAO) {
 
 function estrelas(io, ID_USUARIO, ID_OPINIAO, QUANTIADE) {
 
-    var msg = 'EU_ESTRELAS' + ID_OPINIAO+ID_USUARIO;
+    var msg = 'EU_ESTRELAS' + ID_OPINIAO + ID_USUARIO;
 
 
     execute.executeSQL(`SELECT QUANTIDADE FROM ESTRELA WHERE ID_USUARIO = ${ID_USUARIO} AND ID_OPINIAO = ${ID_OPINIAO}`, function (results) {
@@ -232,8 +241,8 @@ function qtdCurtidasEstrelas(io, ID_OPINIAO) {
 
         execute.executeSQL(`SELECT SUM(QUANTIDADE) AS QUANTIDADE FROM ESTRELA WHERE ID_OPINIAO = ${ID_OPINIAO}`, function (results2) {
 
-            io.emit(msg, 'Essa etapa possuí ' + results1[0].CURTIU + ' curtidas e '+ results2[0].QUANTIDADE + ' estrelas');
-            io.broadcast.emit(msg,  'Essa etapa possuí ' + results1[0].CURTIU + ' curtidas e '+ results2[0].QUANTIDADE + ' estrelas');
+            io.emit(msg, 'Essa etapa possuí ' + results1[0].CURTIU + ' curtidas e ' + results2[0].QUANTIDADE + ' estrelas');
+            io.broadcast.emit(msg, 'Essa etapa possuí ' + results1[0].CURTIU + ' curtidas e ' + results2[0].QUANTIDADE + ' estrelas');
 
 
         });
@@ -248,7 +257,7 @@ exports.denunciar = ('/denunciar/:ID_OPINIAO/:ID_USUARIO/:TEXTO', (req, res) => 
     const ID_OPINIAO = req.params.ID_OPINIAO;
     const ID_USUARIO = req.params.ID_USUARIO;
     const TEXTO = req.params.TEXTO;
-   
+
     var sqlQry = `INSERT INTO DENUNCIA_OPINIAO (ID_OPINIAO, ID_USUARIO, TEXTO) VALUES (${ID_OPINIAO}, ${ID_USUARIO}, '${TEXTO}')`;
 
     execute.executeSQL(sqlQry, function (results) {

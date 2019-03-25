@@ -72,40 +72,48 @@ exports.finalizarEtapa = ('/finalizarEtapa/:ID/:CODIGO', (req, res) => {
     var ID = req.params.ID
     var CODIGO = req.params.CODIGO
 
-    execute.executeSQL(`UPDATE OPINIAO SET SITUACAO = 2 WHERE ID_ETAPA = ${ID}`, function (results1) {
-        if (results1['affectedRows'] > 0) {
+    execute.executeSQL(`SELECT * FROM OPINIAO WHERE ID_ETAPA = ${ID}`, function (results4) {
+        if (results4.length > 0) {
 
-            execute.executeSQL(`UPDATE ETAPA SET SITUACAO = 2 WHERE ID = ${ID}`, function (results2) {
-                if (results2['affectedRows'] > 0) {
+            execute.executeSQL(`UPDATE OPINIAO SET SITUACAO = 2 WHERE ID_ETAPA = ${ID}`, function (results1) {
+                if (results1['affectedRows'] > 0) {
 
-                    var proxID = parseInt(ID);
-                    var proxCOD = parseInt(CODIGO);
+                    execute.executeSQL(`UPDATE ETAPA SET SITUACAO = 2 WHERE ID = ${ID}`, function (results2) {
+                        if (results2['affectedRows'] > 0) {
 
-                    if (proxCOD < 5) {
-                        
-                        proxID++
-                        proxCOD++
+                            var proxID = parseInt(ID);
+                            var proxCOD = parseInt(CODIGO);
 
-                        execute.executeSQL(`UPDATE ETAPA SET SITUACAO = 1 WHERE ID = ${proxID} AND CODIGO = ${proxCOD}`, function (results3) {
-                            if (results3['affectedRows'] > 0) {
-                                res.status(200).send('Etapa finalizada com sucesso!')
+                            if (proxCOD < 5) {
+
+                                proxID++
+                                proxCOD++
+
+                                execute.executeSQL(`UPDATE ETAPA SET SITUACAO = 1 WHERE ID = ${proxID} AND CODIGO = ${proxCOD}`, function (results3) {
+                                    if (results3['affectedRows'] > 0) {
+                                        res.status(200).send('Etapa finalizada com sucesso!')
+                                    } else {
+                                        res.status(203).send(results3);
+                                    }
+                                });
+
                             } else {
-                                res.status(203).send(results3);
+                                res.status(200).send('Etapa finalizada com sucesso!')
                             }
-                        });
+                        } else {
+                            res.status(203).send(results2);
+                        }
+                    });
 
-                    } else {
-                        res.status(200).send('Etapa finalizada com sucesso!')
-                    }
                 } else {
-                    res.status(203).send(results2);
+                    res.status(203).send(results1);
                 }
             });
 
         } else {
-            res.status(203).send(results1);
+            res.status(203).send('Impossível finalizar, não existe nada produzido na etapa!');
         }
-    });
+    })
 })
 
 

@@ -5,9 +5,9 @@ const execute = require('../executeSQL');
 
 
 io.on('connection', (socket) => {
-    console.log('conectou: ' + socket.id)
+   // console.log('conectou: ' + socket.id)
 
-    console.log('id_usuario: ' + socket.handshake.query.ID_USUARIO)
+   // console.log('id_usuario: ' + socket.handshake.query.ID_USUARIO)
 
     var sqlQry = `UPDATE USUARIO SET ONLINE = 1 WHERE ID = ${socket.handshake.query.ID_USUARIO}`;
     execute.executeSQL(sqlQry, function (results) {
@@ -18,8 +18,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', function () {
-        console.log('desconectou: ' + socket.id)
-        console.log('id_usuario: ' + socket.handshake.query.ID_USUARIO)
+       // console.log('desconectou: ' + socket.id)
+       // console.log('id_usuario: ' + socket.handshake.query.ID_USUARIO)
         var sqlQry = `UPDATE USUARIO SET ONLINE = 0 WHERE ID = ${socket.handshake.query.ID_USUARIO}`;
         execute.executeSQL(sqlQry, function (results) {
             socket.emit('ON'+socket.handshake.query.ID_USUARIO, '0');
