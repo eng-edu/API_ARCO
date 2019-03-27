@@ -39,7 +39,7 @@ FROM
         INNER JOIN
     TEMATICA AS t ON a.ID_TEMATICA = t.ID
         INNER JOIN
-    EQUIPE AS e ON a.CODIGO_EQUIPE= e.CODIGO WHERE e.ID_USUARIO = ${ID_USUARIO} AND e.SITUACAO = 2 OR a.ID_LIDER = ${ID_USUARIO} AND e.SITUACAO = 2 GROUP BY a.ID `;
+    EQUIPE AS e ON a.CODIGO_EQUIPE= e.CODIGO WHERE e.ID_USUARIO = ${ID_USUARIO} AND e.SITUACAO = 2 OR a.ID_LIDER = ${ID_USUARIO} AND e.SITUACAO = 2 GROUP BY a.ID ORDER BY a.ID DESC`;
 
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
@@ -135,4 +135,22 @@ function inserirliderNaEquipe(CODIGO_EQUIPE, ID_USUARIO, ID_ARCO, res) {
 
 }
 
+exports.buscarTodosArcos = ('buscarTodosArcos', (req, res) => {
 
+    var sqlQry = `SELECT 
+    o.ID, o.ID_ETAPA, e.NOME AS NOME_ETAPA, o.ID_USUARIO, o.DATA_HORA, o.TEXTO, a.ID_LIDER
+FROM
+    OPINIAO AS o
+        INNER JOIN
+    ETAPA AS e ON o.ID_ETAPA = e.ID
+    INNER JOIN ARCO AS a ON e.ID_ARCO = a.ID ORDER BY e.ID_ARCO DESC, e.CODIGO`;
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            res.status(200).send(results)
+        } else {
+            res.status(203).send(results);
+        }
+
+    });
+
+})

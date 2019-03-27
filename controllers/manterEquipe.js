@@ -91,7 +91,7 @@ exports.inserirMenbro = ('/inserirMenbro/:CODIGO/:ID_USUARIO/', (req, res) => {
 
                                 if (results3.length > 0) {
                                     manterNotificacao.inserirNotificacao(results3[0].ID_LIDER, results3[0].ID, 'Você possui uma solicitação de participação!', res)
-                                  
+
                                 } else {
                                     res.status(203).send(results3);
                                 }
@@ -120,19 +120,54 @@ exports.removerMenbro = ('/removerMenbro/:CODIGO/:ID_USUARIO', (req, res) => {
     const ID_USUARIO = req.params.ID_USUARIO;
     const CODIGO = req.params.CODIGO;
 
-    console.log(ID_USUARIO)
+    execute.executeSQL(`SELECT 
+    o.ID
+FROM
+    ARCO AS a
+        INNER JOIN
+    EQUIPE AS e ON a.CODIGO_EQUIPE = e.CODIGO
+        INNER JOIN
+    ETAPA AS et ON a.ID = et.ID_ARCO
+        INNER JOIN
+    OPINIAO AS o ON et.ID = o.ID_ETAPA WHERE e.ID_USUARIO = ${ID_USUARIO} AND e.CODIGO = '${CODIGO}'`, function (results1) {
 
-    var sqlQry = `DELETE FROM EQUIPE WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO = '${CODIGO}'`;
+                if (results1.length > 0) {
 
-    execute.executeSQL(sqlQry, function (results) {
+                    for(var i = 0; i < results1.length; i++){
+                        execute.executeSQL(`DELETE FROM OPINIAO WHERE ID = ${results1[i].ID}`, function (results) {
+                        
+                        });
+                    }
+                    
+                
 
-        if (results['affectedRows'] > 0) {
-            res.status(200).send(results);
-        } else {
-            res.status(203).send(results);
-        }
+                    execute.executeSQL(`DELETE FROM EQUIPE WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO = '${CODIGO}'`, function (results2) {
 
-    });
+                        if (results2['affectedRows'] > 0) {
+
+                            res.status(200).send('removido com sucesso!')
+
+                        } else {
+                            res.status(203).send(results2);
+                        }
+
+                    });
+
+                } else {
+                    execute.executeSQL(`DELETE FROM EQUIPE WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO = '${CODIGO}'`, function (results2) {
+
+                        if (results1['affectedRows'] > 0) {
+
+                            res.status(200).send('removido com sucesso!')
+
+                        } else {
+                            res.status(203).send(results2);
+                        }
+
+                    });
+                }
+
+            });
 
 });
 
