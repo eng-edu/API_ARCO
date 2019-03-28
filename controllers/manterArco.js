@@ -143,7 +143,7 @@ FROM
     OPINIAO AS o
         INNER JOIN
     ETAPA AS e ON o.ID_ETAPA = e.ID
-    INNER JOIN ARCO AS a ON e.ID_ARCO = a.ID ORDER BY e.ID_ARCO DESC, e.CODIGO`;
+    INNER JOIN ARCO AS a ON e.ID_ARCO = a.ID WHERE o.SITUACAO = 2`;
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             res.status(200).send(results)

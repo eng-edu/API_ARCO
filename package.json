@@ -19,5 +19,12 @@
     "pm2": "^3.2.2",
     "socket.io": "^2.1.1",
     "uuid": "^3.3.2"
+  },
+
+  "bin": "./server/server.js",
+  "pkg": {
+    "targets": [
+      "node6-win-x64"
+    ]
   }
 }
