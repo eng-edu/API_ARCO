@@ -7,11 +7,11 @@ const mysql = require('mysql');
 
 //configura conexao com banco
 exports.connection = mysql.createConnection({
-  host: '191.252.193.192',
+  host: 'localhost',
   port: '3306',
   user: 'root',
   password: '6code384',
-  database: 'bd',
+  database: 'BD',
   charset: 'latin1_swedish_ci'
 });
 
