@@ -111,10 +111,12 @@ WHERE
 }
 
 function buscarEspecialidade(io, CURTIDAS, ESTRELAS, TIPO_USUARIO, ID_USUARIO) {
+
+    for(var i = 0; i > 5; i++){}
     var sqlQry = `SELECT * FROM ESPECIALIDADE WHERE CURTIDAS <= ${CURTIDAS} AND ESTRELAS <= ${ESTRELAS} AND TIPO_USUARIO = ${TIPO_USUARIO} HAVING MAX(ID)`;
     execute.executeSQL(sqlQry, function (results) {
         var msg = 'ESPECIALIDADE' + ID_USUARIO;
         io.emit(msg, results[0]);
         io.broadcast.emit(msg, results[0]);
-    });
+    })
 }
