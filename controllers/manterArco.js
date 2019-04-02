@@ -138,7 +138,7 @@ function inserirliderNaEquipe(CODIGO_EQUIPE, ID_USUARIO, ID_ARCO, res) {
 exports.buscarTodosArcos = ('buscarTodosArcos', (req, res) => {
 
     var sqlQry = `SELECT 
-    o.ID, o.ID_ETAPA, e.NOME AS NOME_ETAPA, o.ID_USUARIO, o.DATA_HORA, o.TEXTO, a.ID_LIDER
+    o.ID, o.ID_ETAPA, e.NOME AS NOME_ETAPA, o.ID_USUARIO, o.DATA_HORA, o.TEXTO, a.ID_LIDER, a.ID AS ID_ARCO
 FROM
     OPINIAO AS o
         INNER JOIN
@@ -150,7 +150,6 @@ FROM
         } else {
             res.status(203).send(results);
         }
-
     });
-
 })
+

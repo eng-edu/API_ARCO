@@ -92,6 +92,7 @@ exports.finalizarEtapa = ('/finalizarEtapa/:ID/:CODIGO', (req, res) => {
                                 execute.executeSQL(`UPDATE ETAPA SET SITUACAO = 1 WHERE ID = ${proxID} AND CODIGO = ${proxCOD}`, function (results3) {
                                     if (results3['affectedRows'] > 0) {
                                         res.status(200).send('Etapa finalizada com sucesso!')
+                                        atualizarStatus(ID)
                                     } else {
                                         res.status(203).send(results3);
                                     }
@@ -99,6 +100,7 @@ exports.finalizarEtapa = ('/finalizarEtapa/:ID/:CODIGO', (req, res) => {
 
                             } else {
                                 res.status(200).send('Etapa finalizada com sucesso!')
+                                atualizarStatus(ID)
                             }
                         } else {
                             res.status(203).send(results2);
@@ -114,7 +116,22 @@ exports.finalizarEtapa = ('/finalizarEtapa/:ID/:CODIGO', (req, res) => {
             res.status(203).send('Impossível finalizar, não existe nada produzido na etapa!');
         }
     })
+
+
+
 })
 
 
 
+function atualizarStatus(ID_ETAPA) {
+
+    execute.executeSQL(`SELECT ID_ARCO FROM ETAPA WHERE ID = ${ID_ETAPA}`, function (results) {
+        if (results.length > 0) {
+            var sqlQry = `CALL SITUACAO_ARCO(${results[0].ID_ARCO});`;
+            execute.executeSQL(sqlQry, function (results1) {
+        
+            });
+        }
+    });
+
+}
