@@ -4,7 +4,7 @@
   "description": "",
   "main": "./server/server.js",
   "scripts": {
-    "start": "nodemon ./server/server.js",
+    "start": "pm2 start ./server/server.js",
     "stop": "pm2 delete api_arco"
   },
   "keywords": [],
