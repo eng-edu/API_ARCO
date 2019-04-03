@@ -34,9 +34,6 @@ socket.on('connection', (io) => {
 
         });
 
-
-
-
     })
 
 });
@@ -54,7 +51,7 @@ FROM
         INNER JOIN
     ARCO AS a ON a.ID = e.ID_ARCO
 WHERE
-    a.ID_LIDER = ${ID_LIDER} AND e.CODIGO = ${CODIGO_ETAPA}`;
+    a.ID_LIDER = ${ID_LIDER} AND e.CODIGO = ${CODIGO_ETAPA}  AND c.CURTIU = 1`;
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             return callbeck(results);
@@ -93,7 +90,7 @@ FROM
     ETAPA AS e ON o.ID_ETAPA = e.ID
     INNER JOIN CURTIDA AS c ON o.ID = c.ID_OPINIAO
 WHERE
-    o.ID_USUARIO = ${ID_USUARIO} AND e.CODIGO = ${CODIGO_ETAPA}`;
+    o.ID_USUARIO = ${ID_USUARIO} AND e.CODIGO = ${CODIGO_ETAPA} AND c.CURTIU = 1`;
     execute.executeSQL(sqlQry, function (results) {
         if (results.length > 0) {
             callbeck(results);
@@ -127,14 +124,32 @@ function buscarEspecialidade(io, CURTIDAS, ESTRELAS, TIPO_USUARIO, ID_USUARIO, C
     for (var i = 0; i > 5; i++) { }
     var sqlQry = `SELECT * FROM ESPECIALIDADE WHERE CURTIDAS <= ${CURTIDAS} AND ESTRELAS <= ${ESTRELAS} AND TIPO_USUARIO = ${TIPO_USUARIO} HAVING MAX(ID)`;
     execute.executeSQL(sqlQry, function (results) {
-        var msg = 'ESPECIALIDADE' + ID_USUARIO +"_"+ CODIGO_ETAPA;
+        var msg = 'ESPECIALIDADE' + ID_USUARIO + "_" + CODIGO_ETAPA;
 
         if (results.length > 0) {
             results[0].ESTRELAS = ESTRELAS
             results[0].CURTIDAS = CURTIDAS
             io.emit(msg, results[0]);
             io.broadcast.emit(msg, results[0]);
+
+
+            execute.executeSQL(`SELECT * FROM ESPECIALIDADE_DO_USUARIO WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO_ETAPA = ${CODIGO_ETAPA}`, function (results2) {
+
+                if (results2.length > 0) {
+                    execute.executeSQL(`UPDATE ESPECIALIDADE_DO_USUARIO SET ID_ESPECIALIDADE = ${results[0].ID}, CURTIDAS = ${results[0].CURTIDAS}, ESTRELAS = ${results[0].ESTRELAS} WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO_ETAPA = ${CODIGO_ETAPA} `, function (results3) { });
+               } else {
+                    execute.executeSQL(`INSERT INTO ESPECIALIDADE_DO_USUARIO (ID_USUARIO, ID_ESPECIALIDADE, CURTIDAS, ESTRELAS, CODIGO_ETAPA) VALUES (${ID_USUARIO}, ${results[0].ID}, ${results[0].CURTIDAS}, ${results[0].ESTRELAS}, ${CODIGO_ETAPA})`, function (results) { });
+                }
+
+            });
+
         }
 
     })
+
+
+
+
+
+
 }
