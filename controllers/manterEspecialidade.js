@@ -8,22 +8,34 @@ socket.on('connection', (io) => {
 
     io.on('ESPECIALIDADE', function (results) {
 
-        if (results.TIPO_USUARIO == 1) {
 
-            curtidasLider(results.ID_USUARIO, results.CODIGO_ETAPA, function(x){
-                estrelasLider(results.ID_USUARIO, results.CODIGO_ETAPA, function(y){
-                    buscarEspecialidade(io, x[0].CURTIDAS, y[0].ESTRELAS, results.TIPO_USUARIO, results.ID_USUARIO)
-                })
-            })
+        execute.executeSQL(`SELECT TIPO AS TIPO_USUARIO FROM USUARIO WHERE ID = ${results.ID_USUARIO}`, function (resultQuery) {
 
-        } else if (results.TIPO_USUARIO == 2) {
-            
-            curtidasMenbro(results.ID_USUARIO, results.CODIGO_ETAPA, function(x){
-                estrelasMenbro(results.ID_USUARIO, results.CODIGO_ETAPA, function(y){
-                    buscarEspecialidade(io, x[0].CURTIDAS, y[0].ESTRELAS, results.TIPO_USUARIO, results.ID_USUARIO)
-                })
-            })
-        }
+            if (resultQuery.length > 0) {
+
+                if (resultQuery[0].TIPO_USUARIO == 1) {
+
+                    curtidasLider(results.ID_USUARIO, results.CODIGO_ETAPA, function (x) {
+                        estrelasLider(results.ID_USUARIO, results.CODIGO_ETAPA, function (y) {
+                            buscarEspecialidade(io, x[0].CURTIDAS, y[0].ESTRELAS, resultQuery[0].TIPO_USUARIO, results.ID_USUARIO, results.CODIGO_ETAPA)
+                        })
+                    })
+
+                } else if (resultQuery[0].TIPO_USUARIO == 2) {
+
+                    curtidasMenbro(results.ID_USUARIO, results.CODIGO_ETAPA, function (x) {
+                        estrelasMenbro(results.ID_USUARIO, results.CODIGO_ETAPA, function (y) {
+                            buscarEspecialidade(io, x[0].CURTIDAS, y[0].ESTRELAS, resultQuery[0].TIPO_USUARIO, results.ID_USUARIO, results.CODIGO_ETAPA)
+                        })
+                    })
+                }
+
+            }
+
+        });
+
+
+
 
     })
 
@@ -110,13 +122,21 @@ WHERE
     });
 }
 
-function buscarEspecialidade(io, CURTIDAS, ESTRELAS, TIPO_USUARIO, ID_USUARIO) {
+function buscarEspecialidade(io, CURTIDAS, ESTRELAS, TIPO_USUARIO, ID_USUARIO, CODIGO_ETAPA) {
 
-    for(var i = 0; i > 5; i++){}
+    for (var i = 0; i > 5; i++) { }
     var sqlQry = `SELECT * FROM ESPECIALIDADE WHERE CURTIDAS <= ${CURTIDAS} AND ESTRELAS <= ${ESTRELAS} AND TIPO_USUARIO = ${TIPO_USUARIO} HAVING MAX(ID)`;
     execute.executeSQL(sqlQry, function (results) {
-        var msg = 'ESPECIALIDADE' + ID_USUARIO;
-        io.emit(msg, results[0]);
-        io.broadcast.emit(msg, results[0]);
+        var msg = 'ESPECIALIDADE' + ID_USUARIO +"_"+ CODIGO_ETAPA;
+
+        if (results.length > 0) {
+            results[0].ESTRELAS = ESTRELAS
+            results[0].CURTIDAS = CURTIDAS
+
+            io.emit(msg, results[0]);
+            io.broadcast.emit(msg, results[0]);
+
+        }
+
     })
 }
