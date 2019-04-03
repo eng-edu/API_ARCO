@@ -1,5 +1,5 @@
 
-const socket = require('../server/serverSocket');
+const socket = require('../serverSocket');
 const execute = require('../executeSQL');
 
 

@@ -1,18 +1,18 @@
 'use strict';
 
 //carrega modulos
-const app = require('../app');
+const app = require('./app');
 const debug = require('debug')('eduardo:server');
 const http = require('http');
 
 
 //define a porta
-const port = normalizePort(process.env.port||'8052');
+const port = normalizePort(process.env.port||'8080');
 app.set('port', port);
 
 //cria o server
 const server = http.createServer(app);
-const serverSocket = require('../server/serverSocket');
+const serverSocket = require('./serverSocket');
 serverSocket.attach(server);
 
 //coloca o server pra rodar 
