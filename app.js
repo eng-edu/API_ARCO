@@ -7,10 +7,10 @@ const mysql = require('mysql');
 
 //configura conexao com banco
 exports.connection = mysql.createConnection({
-  host: 'base-argio.mysql.uhserver.com',
+  host: '191.252.193.192',
   port: '3306',
-  user: 'eduardolima384',
-  password: 'w.rumE.RA.Q-q2z',
+  user: 'root',
+  password: '6code384',
   database: 'base_argio',
   charset: 'latin1_swedish_ci'
 });
