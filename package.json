@@ -4,8 +4,7 @@
   "description": "",
   "main": "./server/server.js",
   "scripts": {
-    "start": "pm2 start ./server/server.js",
-    "stop": "pm2 delete api_arco"
+    "start": "node ./server/server.js"
   },
   "keywords": [],
   "author": "",
