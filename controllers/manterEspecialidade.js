@@ -132,10 +132,8 @@ function buscarEspecialidade(io, CURTIDAS, ESTRELAS, TIPO_USUARIO, ID_USUARIO, C
         if (results.length > 0) {
             results[0].ESTRELAS = ESTRELAS
             results[0].CURTIDAS = CURTIDAS
-
             io.emit(msg, results[0]);
             io.broadcast.emit(msg, results[0]);
-
         }
 
     })
