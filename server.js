@@ -7,7 +7,7 @@ const http = require('http');
 
 
 //define a porta
-const port = normalizePort(process.env.port||'8080');
+const port = normalizePort(process.env.PORT || config.port);
 app.set('port', port);
 
 //cria o server

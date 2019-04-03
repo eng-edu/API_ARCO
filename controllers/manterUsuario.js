@@ -181,16 +181,18 @@ function enviarEmail(destinatario, novasenha, res){
 
     var nodemailer = require('nodemailer');
 
-    var usuario = 'eduardo.eng15@hotmail.com';
+    var usuario = 'contato@argio.uh-app.com.br';
     var senha = '6code384'; 
     
     var transporter = nodemailer.createTransport({
-        service: 'hotmail',
+        host: "smtp.argio.uh-app.com.br",
+        port: 587,
+        secure: true,
         auth: {
             user: usuario,
             pass: senha
         }
-    });
+      });
     
     var mailOptions = {
         from: usuario,
