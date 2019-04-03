@@ -7,8 +7,8 @@ const http = require('http');
 
 
 //define a porta
-const port = normalizePort(process.env.port||'8080');
-app.set('port', port);
+//const port = normalizePort(process.env.port||'8080');
+//app.set('port', port);
 
 //cria o server
 const server = http.createServer(app);
@@ -16,10 +16,10 @@ const serverSocket = require('./serverSocket');
 serverSocket.attach(server);
 
 //coloca o server pra rodar 
-server.listen(port);
+server.listen(process.env.PORT || config.port);
 server.on('error', onError);
 server.on('listening', onListening);
-console.log('API rodando na porta ' + port);
+console.log('API rodando na porta ' + process.env.PORT || config.port);
 
 function normalizePort(val) {
   const port = parseInt(val, 10);
