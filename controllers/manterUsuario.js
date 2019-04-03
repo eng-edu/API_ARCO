@@ -90,6 +90,32 @@ exports.buscarUsuario = ('/buscarUsuario/:ID', (req, res) => {
     });
 })
 
+
+exports.buscarRanking = ('/Ranking', (req, res) => {
+    var sqlQry = `SELECT 
+    eu.ID_USUARIO,
+    eu.ID_ESPECIALIDADE,
+    SUM(eu.CURTIDAS) AS CURTIDAS,
+    SUM(eu.ESTRELAS) AS ESTRELAS,
+    es.NOME,
+    es.NIVEL
+FROM
+    ESPECIALIDADE_DO_USUARIO AS eu
+    INNER JOIN ESPECIALIDADE AS es ON  es.ID = eu.ID_ESPECIALIDADE
+GROUP BY (eu.ID_USUARIO)
+ORDER BY eu.ESTRELAS DESC , eu.CURTIDAS DESC`;
+    execute.executeSQL(sqlQry, function (results) {
+        if (results.length > 0) {
+            res.status(200).send(results)
+        } else {
+            res.status(203).send(results)
+        }
+    });
+})
+
+
+
+
 exports.alterarComFoto = ('/alterarComFoto/:ID/:BIO/:NOME/:SOBRENOME/:CPF/:SEXO/:DATA_NASC/:ESCOLARIDADE/', (req, res) => {
 
     const ID = req.params.ID

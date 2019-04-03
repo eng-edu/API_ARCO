@@ -14,7 +14,7 @@ router.post('/recuperarSenha/:EMAIL/:DATA_NASC', manterUsuario.recuperarSenha)
 router.get('/buscarUsuario/:ID', manterUsuario.buscarUsuario)
 router.route('/alterarComFoto/:ID/:BIO/:NOME/:SOBRENOME/:CPF/:SEXO/:DATA_NASC/:ESCOLARIDADE/').put(multiparty(), manterUsuario.alterarComFoto)
 router.put('/alterar/:ID/:BIO/:NOME/:SOBRENOME/:CPF/:SEXO/:DATA_NASC/:ESCOLARIDADE/', manterUsuario.alterar)
-
+router.get('/buscarRanking', manterUsuario.buscarRanking)
 //exporta o modulo
 module.exports = router
 
