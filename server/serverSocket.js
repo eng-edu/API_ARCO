@@ -1,7 +1,7 @@
 'use strict';
 
 const io = require('socket.io')();
-const execute = require('./executeSQL');
+const execute = require('../executeSQL');
 
 
 io.on('connection', (socket) => {

@@ -1,7 +1,7 @@
 'use strict';
 
 //carrega modulos
-const app = require('./app');
+const app = require('../app');
 const debug = require('debug')('eduardo:server');
 const http = require('http');
 
