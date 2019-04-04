@@ -7,7 +7,7 @@ const mysql = require('mysql');
 
 //configura conexao com banco
 exports.connection = mysql.createConnection({
-  host: '191.252.193.192',
+  host: '191.252.186.65',
   port: '3306',
   user: 'root',
   password: '6code384',
