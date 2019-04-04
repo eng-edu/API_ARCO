@@ -91,7 +91,7 @@ exports.buscarUsuario = ('/buscarUsuario/:ID', (req, res) => {
 })
 
 
-exports.buscarRanking = ('/Ranking', (req, res) => {
+exports.buscarRanking = ('/buscarRanking', (req, res) => {
     var sqlQry = `SELECT 
     eu.ID_USUARIO,
     eu.ID_ESPECIALIDADE,

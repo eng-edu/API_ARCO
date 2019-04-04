@@ -138,9 +138,9 @@ function buscarEspecialidade(io, CURTIDAS, ESTRELAS, TIPO_USUARIO, ID_USUARIO, C
             execute.executeSQL(`SELECT * FROM ESPECIALIDADE_DO_USUARIO WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO_ETAPA = ${CODIGO_ETAPA}`, function (results2) {
 
                 if (results2.length > 0) {
-                    execute.executeSQL(`UPDATE ESPECIALIDADE_DO_USUARIO SET ID_ESPECIALIDADE = ${results[0].ID}, CURTIDAS = ${results[0].CURTIDAS}, ESTRELAS = ${results[0].ESTRELAS} WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO_ETAPA = ${CODIGO_ETAPA} `, function (results3) { });
+                    execute.executeSQL(`UPDATE ESPECIALIDADE_DO_USUARIO SET ID_ESPECIALIDADE = ${results[0].ID}, CURTIDAS = ${results[0].CURTIDAS}, ESTRELAS = ${results[0].ESTRELAS} WHERE ID_USUARIO = ${ID_USUARIO} AND CODIGO_ETAPA = ${CODIGO_ETAPA} `, function (results3)  {console.log(results) });
                } else {
-                    execute.executeSQL(`INSERT INTO ESPECIALIDADE_DO_USUARIO (ID_USUARIO, ID_ESPECIALIDADE, CURTIDAS, ESTRELAS, CODIGO_ETAPA) VALUES (${ID_USUARIO}, ${results[0].ID}, ${results[0].CURTIDAS}, ${results[0].ESTRELAS}, ${CODIGO_ETAPA})`, function (results) { });
+                    execute.executeSQL(`INSERT INTO ESPECIALIDADE_DO_USUARIO (ID_USUARIO, ID_ESPECIALIDADE, CURTIDAS, ESTRELAS, CODIGO_ETAPA) VALUES (${ID_USUARIO}, ${results[0].ID}, ${results[0].CURTIDAS}, ${results[0].ESTRELAS}, ${CODIGO_ETAPA})`, function (results) {console.log(results) });
                 }
 
             });
