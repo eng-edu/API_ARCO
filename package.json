@@ -4,7 +4,7 @@
   "description": "",
   "main": "./server/server.js",
   "scripts": {
-    "start": "pm2 start ./server/server.js -- watch"
+    "start": "pm2 start ./server/server.js"
   },
   "keywords": [],
   "author": "",
