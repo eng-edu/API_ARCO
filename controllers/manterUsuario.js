@@ -94,14 +94,14 @@ exports.buscarUsuario = ('/buscarUsuario/:ID', (req, res) => {
 exports.buscarRanking = ('/buscarRanking', (req, res) => {
     var sqlQry = `SELECT 
     eu.ID_USUARIO,
-    eu.ID_ESPECIALIDADE,
     SUM(eu.CURTIDAS) AS CURTIDAS,
-    SUM(eu.ESTRELAS) AS ESTRELAS,
-    es.NOME,
-    es.NIVEL
+    SUM(eu.ESTRELAS) AS ESTRELAS
 FROM
     ESPECIALIDADE_DO_USUARIO AS eu
-    INNER JOIN ESPECIALIDADE AS es ON  es.ID = eu.ID_ESPECIALIDADE
+        INNER JOIN
+    USUARIO AS u ON u.ID = eu.ID_USUARIO
+WHERE
+    u.TIPO = 2
 GROUP BY (eu.ID_USUARIO)
 ORDER BY eu.ESTRELAS DESC , eu.CURTIDAS DESC`;
     execute.executeSQL(sqlQry, function (results) {
