@@ -1,9 +1,12 @@
 "ID";"NOME";"SOBRENOME";"ESCOLARIDADE";"CPF";"DATA_NASC";"EMAIL";"SENHA";"SEXO";"BIO";"TIPO";"SITUACAO";"ONLINE"
-1;"Eduardo";"Lima Nascimento";"Superior";"029.425.012-35";"03/12/1996";"edu@gmail.com";"12345";"M";"fminha biogrÃ¡fia ðŸ’“ teste testando teste 1 teste 2 teste 3 teste 4 teste 5";1;0;0
+1;"Eduardo";"Lima Nascimento";"Superior";"029.425.012-35";"03/12/1996";"edu@gmail.com";"12345";"M";"fminha biogrÃ¡fia ðŸ’“ teste testando teste 1 teste 2 teste 3 teste 4 teste 5";1;0;1
 6;"Elane";"Lima Nascimento";"MÃ©dio";" - ";"28/03/1994";"elane@gmail.com";"12345";"F";"sou nova aquiðŸ˜˜";2;0;1
 7;"leonardo";"lima";"Fundamental";" - ";"19/02/2006";"leo@gmail.com";"12345";"M";"aaaa";2;0;0
 11;"teste ";"teste ";"Fundamental";" - ";"03/08/2013";"teste@gmail.com";"12345";"M";"aaaa";2;0;0
 12;"teste";"teste";"Fundamental";" - ";"03/12/1996";"teste1@gmail.com";"12345";"M";"testando .....";2;0;0
-13;"Raquel";"Batista ";"Fundamental";" - ";"17/02/1987";"raquel.vitoria.rkmm@gmail.com";"raquel1516";"F";"estudante";2;0;0
+13;"Raquel";"Batista ";"Fundamental";" - ";"17/02/1987";"raquel.vitoria.rkmm@gmail.com";"raquel1516";"F";"estudante";2;0;1
 14;"Beatriz";"Aguiar";"Fundamental";" - ";"07/12/1999";"baguiar0712@hotmail.com";"baguiar046";"F";"Vivo por algo que vale a pena morrer: Jesus.";2;0;0
 15;"Bruna ";"sousa";"MÃ©dio";" - ";"21/03/1997";"sousabruna_97@hotmail.com";"21031212";"F";"law";2;0;0
+16;"Hugo";"Henrique";"Superior";"010.607.072-09";"25/07/1995";"hhalf.95@gmail.com";"12345678";"M";"universitÃ¡rio";1;0;0
+17;"Ã‰rick";"Vitor";"MÃ©dio";" - ";"18/07/2003";"erickfoda1@gmail.com";"Cadeira09";"M";"Gente fina com geral";2;0;0
+18;"Henrique";"Henrique";"MÃ©dio";" - ";"25/09/1994";"henriquelbarat@gmail.com";"12345678";"M";"eu";2;0;0
